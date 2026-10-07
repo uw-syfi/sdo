@@ -58,7 +58,7 @@ func TestFindingStateUsesPerDetectorPersistence(t *testing.T) {
 	}
 }
 
-// TestFindingStateMinDurationSuppressesBriefStall mirrors N13's kind-worker
+// TestFindingStateMinDurationSuppressesBriefStall mirrors a kind-worker
 // data-plane stall: traffic-health reaches its firing evaluation count (2)
 // within about 0.5s because the traffic window is re-evaluated on every
 // 500ms poll, but the real stall clears within about 3s. A minimum-duration

@@ -1,8 +1,7 @@
 """Committed validator-image schema identity (the expected value).
 
-Stage 4 of the single-source-of-truth track (``docs/seam-contracts-decisions.md``,
-seam 4). This is the schema identity the production detector-validation path
-expects the validator image to embed. The validator sandbox passes it to the
+Stage 4 of the single-source-of-truth track (seam 4). This is the schema identity the
+production detector-validation path expects the validator image to embed. The validator sandbox passes it to the
 in-image ``controller.builder.check_cli`` as ``--expect-schema``; the image
 recomputes its own identity from its baked SDK and fails loud on a mismatch (a
 stale image).
@@ -18,5 +17,5 @@ stale validator.
 
 from __future__ import annotations
 
-SDK_SCHEMA_IDENTITY = "sdo.dev/v1alpha1+sdk.a24a1bfd980f6444"
+SDK_SCHEMA_IDENTITY = "sdo.dev/v1alpha1+sdk.496cc7d311c9b203"
 """Regenerate with ``controller.builder.schema.schema_identity()`` when the SDK schema changes."""

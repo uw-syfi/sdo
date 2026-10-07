@@ -184,14 +184,14 @@ def scripted_result(
 
 
 #: How the suite answers a stray incident: ``cancelled`` (the honest default) or ``completed``
-#: with no repair action, the shape a real responder gives a self-healed stray (F16).
+#: with no repair action, the shape a real responder gives a self-healed stray.
 STRAY_STATUSES = ("cancelled", "completed")
 
 
 def stray_result(request: dict[str, Any], status: str = "cancelled") -> dict[str, Any]:
     """The answer for an incident no injected fault explains: nothing repaired, so ``cancelled``.
 
-    ``cancelled`` is the honest answer for a finding that healed on its own. Since F16 the broker
+    ``cancelled`` is the honest answer for a finding that healed on its own. The broker
     also closes a ``completed`` result with no repair action as cancelled when health is already
     clear, but it still rejects that shape while health is not verified clear.
     """
@@ -217,7 +217,7 @@ def _action(
     success: bool,
     objects: tuple[str, ...] = (),
 ) -> dict[str, Any]:
-    """A repair receipt; ``objects`` are the ``Kind/name`` objects it mutated (F8 attribution)."""
+    """A repair receipt; ``objects`` are the ``Kind/name`` objects it mutated."""
 
     return {
         "action_id": action_id,

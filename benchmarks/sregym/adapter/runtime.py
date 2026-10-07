@@ -585,7 +585,7 @@ def _production_receipt(
         "source_topology_fingerprint": ledger.get("source_topology_fingerprint"),
         "lifecycle_provenance": (config.repository / ".sdo" / "lifecycle-provenance.yaml").is_file(),
     }
-    # How the incident closed; only ``sdo_mitigated`` credits SDO with the recovery (D30).
+    # How the incident closed; only ``sdo_mitigated`` credits SDO with the recovery.
     receipt["resolution"] = receipt_resolution(receipt)
     if receipt["controller_update_required"] and not controller_update_rollout:
         raise ControllerInstallError("accepted detector update was not rolled out by the controller supervisor")
@@ -635,7 +635,7 @@ def _diagnosis_verification(closure: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _recovery_attribution(verification: list[dict[str, Any]]) -> str | None:
-    """``responder`` when its own repair backs a verified cause, ``external`` when none does (F8).
+    """``responder`` when its own repair backs a verified cause, ``external`` when none does.
 
     ``None`` when no cause carries a repair attribution.
     """

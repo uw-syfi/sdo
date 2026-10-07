@@ -1,8 +1,7 @@
 """Analyze the phase-1 live assurance matrix (the assurance plan (a)).
 
-Phase 1 has no stock (no-verify) Codex arm (user decision, 2026-09-28,
-the assurance plan decisions log): its sole Codex arm is the default, concise-verify
-baseline. Every claim below compares SDO against that one arm. Where the
+Phase 1 has no stock (no-verify) Codex arm (user decision, 2026-09-28): its sole Codex
+arm is the default, concise-verify baseline. Every claim below compares SDO against that one arm. Where the
 original SDO evaluation compared against a stock baseline, the claim's summary
 notes that phase 1 has no stock arm to compare against.
 
@@ -68,7 +67,7 @@ PLAN_TOKEN_WEIGHTS = TokenWeights(uncached_input=1.0, cache_read_input=0.1, cach
 
 ClaimVerdict = Literal["pass", "directional", "fail", "insufficient_data", "deferred"]
 
-#: The assurance plan (b) phase-1 problem set (K3 and V1 and S4 are phase 2 only, D10/D-table).
+#: The assurance plan (b) phase-1 problem set (K3 and V1 and S4 are phase 2 only).
 PHASE1_PROBLEMS = (
     "missing_configmap_hotel_reservation",
     "wrong_service_selector_hotel_reservation",
@@ -81,7 +80,7 @@ COMPOSITE_PROBLEMS = (
     "composite_frontend_selector_and_readiness_hotel_reservation",
 )
 
-#: User decision (2026-09-28, the assurance plan decisions log): phase 1 has no stock
+#: User decision (2026-09-28): phase 1 has no stock
 #: (no-verify) Codex arm. The original evaluation's C1-C4 and C8 comparisons were
 #: against a stock baseline; every claim here compares against the default,
 #: concise-verify arm instead, and says so.
@@ -610,7 +609,7 @@ def compute_c11_verify_ratio(
         f"{report.summary} Decoy-driven-failure counting (a trace showing a decoy acted on as the cause) is NOT "
         "computed here: it needs a diagnosis-text scan against the known decoy markers "
         "(failure-admin-*, benign_env_drift/LOG_LEVEL), which is outside incident_cost's data model. "
-        "K3 (the misleading-drift composite) is phase-2 only (D10), so it does not appear in this phase-1 analysis."
+        "K3 (the misleading-drift composite) is phase-2 only, so it does not appear in this phase-1 analysis."
     )
     return ClaimReport(
         "C11",

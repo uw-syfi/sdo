@@ -315,7 +315,7 @@ class RepairActionReceipt(ContractModel):
     kind: str = Field(min_length=1)
     target: str = Field(min_length=1)
     #: The objects this action mutated. Diagnosis verification credits a
-    #: confirmed root cause only to a repair that touched its resources (F8).
+    #: confirmed root cause only to a repair that touched its resources.
     #: Empty in receipts written before it was recorded; ``target`` is then
     #: parsed as ``[namespace/]Kind/name`` instead.
     resources: list[ObjectRef] = Field(default_factory=list)

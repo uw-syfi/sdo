@@ -11,7 +11,7 @@
 // structs in controller/runtime; proto is the single schema source and the
 // conformance tests make any drift between the three a build failure.
 //
-// Wire convention (docs/seam-contracts-decisions.md): protojson, snake_case
+// Wire convention: protojson, snake_case
 // field names, enums carried as their lowercase domain strings (constrained by
 // protovalidate, not proto enums, so the existing .sdo/outcomes.jsonl records
 // and strict receipts stay readable). Semantic invariants are expressed in

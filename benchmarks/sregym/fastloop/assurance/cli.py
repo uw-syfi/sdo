@@ -325,7 +325,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--stray-status",
         choices=("cancelled", "completed"),
         default="cancelled",
-        help="answer stray incidents cancelled, or completed with no repair action (F16's healed-stray shape)",
+        help="answer stray incidents cancelled, or completed with no repair action",
     )
     run.add_argument("--results", type=Path, default=None)
     run.add_argument("--run-id", default=None)

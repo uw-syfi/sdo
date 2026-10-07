@@ -9,7 +9,7 @@ import (
 	"sdo.dev/controller/sdk/sdktest"
 )
 
-// TestIncidentClosureCarriesTheStateDiffAsOfVerificationTime reproduces N11:
+// TestIncidentClosureCarriesTheStateDiffAsOfVerificationTime reproduces the late-component case:
 // on a composite fault (K2), the readiness-probe component lands a few
 // seconds after the selector component, while the incident is already open.
 // The dispatched request's diff is an immutable snapshot taken at dispatch,
@@ -97,7 +97,7 @@ func TestIncidentClosureCarriesTheStateDiffAsOfVerificationTime(t *testing.T) {
 }
 
 // TestIncidentClosureNeverInventsAStateChangeItNeverSaw guards the other side
-// of N11: a closure with no baseline configured never fabricates a diff, and
+// of that case: a closure with no baseline configured never fabricates a diff, and
 // one with a baseline never reports a change that was not actually observed.
 func TestIncidentClosureNeverInventsAStateChangeItNeverSaw(t *testing.T) {
 	cause := controllerDetector("cause", time.Second, stateFinding("cause"), stateFinding("cause"), sdk.Finding{}, sdk.Finding{})

@@ -1,8 +1,7 @@
 """Generated proto contract messages and the canonical protojson convention.
 
-This is the Python edge of the proto single-source-of-truth track
-(``docs/seam-contracts-decisions.md``). The ``.proto`` files under ``proto/`` are
-the one source; ``buf generate`` emits the messages into ``sdo/contracts/_gen``
+This is the Python edge of the proto single-source-of-truth track. The ``.proto`` files under
+``proto/`` are the one source; ``buf generate`` emits the messages into ``sdo/contracts/_gen``
 and this facade re-exports them under a stable import path so callers never
 reach into the generated tree directly.
 

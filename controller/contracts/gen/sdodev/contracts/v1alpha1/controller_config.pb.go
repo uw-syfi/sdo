@@ -7,8 +7,7 @@
 // ControllerConfig is the controller's own launch configuration: the one typed
 // object the launcher populates (serialized once, mounted) and the controller
 // reads, replacing the hand-mirrored argv-flag boundary between the Python
-// launcher and the controller entry point (docs/seam-contracts-decisions.md,
-// seam 3). A flag the launcher sets that the controller does not define used to
+// launcher and the controller entry point (seam 3). A flag the launcher sets that the controller does not define used to
 // crash every controller pod with "unrecognized arguments" (the
 // --closeout-state-gate drift); with one shared message a missing field is a
 // build error instead.

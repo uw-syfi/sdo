@@ -166,7 +166,7 @@ def test_a_fault_missing_from_the_requests_diff_is_cited_as_a_live_observation_n
         request,
         objects=("Service/frontend", "ConfigMap/mongo-rate-script"),
         summary="two faults",
-        # The responder's own repair of both objects backs the cause (F8).
+        # The responder's own repair of both objects backs the cause.
         actions=[
             {
                 "action_id": "correct",
@@ -421,7 +421,7 @@ def test_a_stray_incidents_answer_passes_the_brokers_recorded_actions_rule() -> 
 
     BrokerService._validate_recorded_actions(closure(stray_result(request)))
     completed = {**stray_result(request), "status": "completed"}
-    # F16: with health clear, a no-action completion closes (as cancelled);
+    # With health clear, a no-action completion closes (as cancelled);
     # while health is not verified clear it is still rejected.
     BrokerService._validate_recorded_actions(closure(completed))
     with pytest.raises(Exception, match="successful recorded repair action"):
@@ -429,7 +429,7 @@ def test_a_stray_incidents_answer_passes_the_brokers_recorded_actions_rule() -> 
 
 
 def test_a_stray_can_be_answered_as_a_healed_no_action_completion() -> None:
-    """``--stray-status completed``: F16's shape, a completion with nothing repaired and nothing blamed."""
+    """``--stray-status completed``: a completion with nothing repaired and nothing blamed."""
 
     from benchmarks.sregym.fastloop.assurance.suite import stray_result
 

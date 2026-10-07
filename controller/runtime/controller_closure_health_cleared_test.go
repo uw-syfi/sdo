@@ -10,7 +10,7 @@ import (
 )
 
 // TestIncidentClosureRecordsWhenHealthBeganItsFinalClearStreak covers the
-// controller fact behind F8's repair attribution: a responder's repair can
+// controller fact behind repair attribution: a responder's repair can
 // back a root cause only if it started before health cleared. A health
 // detector that flaps clear and fires again has not cleared; the closure
 // records the start of the final streak of clear evaluations.

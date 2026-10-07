@@ -8,7 +8,7 @@ import (
 	"sdo.dev/controller/sdk"
 )
 
-// F8: a composite outcome is a success when the responder's own repair backs
+// A composite outcome is a success when the responder's own repair backs
 // one cause, but a cause SDO verified as unattributed (someone else fixed it)
 // or contradicted must not be surfaced to the next responder as a known root
 // cause. Records without a verification keep every cause.

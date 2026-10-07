@@ -54,7 +54,7 @@ def _action(
         "action_id": action_id,
         "kind": "kubectl",
         "target": target,
-        # SDO credits a root cause only to a repair that mutated its resources (F8).
+        # SDO credits a root cause only to a repair that mutated its resources.
         "resources": [resource for resource in resources if resource.get("name")],
         "summary": summary,
         "details": details.strip()[:2000] or summary,
@@ -103,7 +103,7 @@ def respond(turn: Turn, directive: Directive, request: dict[str, Any], prompt: s
 
 
 def _healed_noop(turn: Turn, directive: Directive, result: dict[str, Any]) -> None:
-    """Wait for the finding to heal without touching anything, then claim ``completed`` with no action (F16).
+    """Wait for the finding to heal without touching anything, then claim ``completed`` with no action.
 
     This is the shape a real responder gives a stray that self-healed: nothing
     was repaired and nothing is blamed. SDO must close it as cancelled.

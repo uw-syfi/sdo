@@ -108,7 +108,7 @@ type Controller struct {
 	detectorReviewRequiredAt time.Time
 	detectorReviewReason     string
 	// detectorClearSince maps each detector to the start of its current
-	// streak of clear evaluations (F8); a firing or erroring evaluation ends
+	// streak of clear evaluations; a firing or erroring evaluation ends
 	// the streak. Guarded by mu.
 	detectorClearSince map[string]time.Time
 	// incidentObservedChanges maps Kind/name to the first time the open
@@ -725,7 +725,7 @@ func (c *Controller) trackClearStreak(detectorID string, now time.Time, clear bo
 
 // healthClearedAtLocked is when the closure gate's detectors began their
 // final clear streak: the latest streak start among them. A repair action
-// that started after it cannot have restored health (F8). nil when a gate
+// that started after it cannot have restored health. nil when a gate
 // detector has no clear streak on record. Called with c.mu held.
 func (c *Controller) healthClearedAtLocked(finalStates []DetectorEvaluation) *time.Time {
 	var cleared time.Time
@@ -1232,7 +1232,7 @@ func (c *Controller) observedStateChangesLocked() []ObservedStateChange {
 }
 
 // finalStateChangesLocked is the configuration diff against the healthy
-// baseline at verification time (N11): a composite's later fault can land a
+// baseline at verification time: a composite's later fault can land a
 // few seconds after dispatch, so the dispatch-time request diff can miss it
 // while it is already visible here. Called with c.mu held; StateBaseline
 // implementations keep their own lock, so there is no ordering hazard.

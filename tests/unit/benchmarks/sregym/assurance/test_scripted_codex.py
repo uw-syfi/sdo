@@ -164,7 +164,7 @@ def test_scripted_responder_repairs_through_the_real_structured_turn(
     assert {(ref.kind, ref.name) for ref in cause.resources} >= {("NetworkPolicy", POLICY)}
     assert cause.explained_detectors == ["traffic-health"]
     assert [action.success for action in result.repair_actions] == [True]
-    # The repair names what it mutated, so SDO can attribute the confirmed cause to it (F8).
+    # The repair names what it mutated, so SDO can attribute the confirmed cause to it.
     assert ("NetworkPolicy", POLICY) in {(ref.kind, ref.name) for ref in result.repair_actions[0].resources}
     assert result.verification_evidence[0].name == "sdo-incident-status"
     assert result.verification_evidence[0].passed is True
@@ -338,7 +338,7 @@ def test_a_failed_plan_records_why_it_stopped(scripted: dict[str, Path], monkeyp
 def test_healed_noop_claims_completed_with_no_action_once_health_is_back(
     scripted: dict[str, Path], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """F16's production shape: the finding healed without the responder, which truthfully reports doing nothing."""
+    """The production shape: the finding healed without the responder, which truthfully reports doing nothing."""
 
     worktree = _memory_worktree(scripted["tmp"])
     request = _request(worktree, scripted["tmp"], monkeypatch)

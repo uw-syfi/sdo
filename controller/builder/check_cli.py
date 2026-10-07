@@ -208,7 +208,7 @@ def _add_expect_schema_arg(parser: argparse.ArgumentParser) -> None:
 def _assert_expected_schema(args: argparse.Namespace) -> None:
     """Fail loud when a stale image's embedded schema differs from the caller's.
 
-    Seam 4 of docs/seam-contracts-decisions.md: the sandbox passes the schema
+    Seam 4 of the schema-identity contract: the sandbox passes the schema
     identity it expects (sdo.contracts.sdk_schema.SDK_SCHEMA_IDENTITY); this
     recomputes the identity from the image's own baked SDK sources. A mismatch
     means the running image predates the current schema -- the stale-validator

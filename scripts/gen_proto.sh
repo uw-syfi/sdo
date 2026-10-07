@@ -2,7 +2,7 @@
 # Regenerate the Go and Python code from the proto contracts.
 #
 # proto/ is the single source of truth for SDO's cross-seam contracts
-# (see docs/seam-contracts-decisions.md). Generated code is committed so builds
+# Generated code is committed so builds
 # do not need the toolchain; run this after editing any .proto and commit the
 # diff. scripts/check_proto.sh asserts the committed output matches.
 

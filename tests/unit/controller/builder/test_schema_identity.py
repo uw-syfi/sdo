@@ -14,8 +14,7 @@ from sdo.contracts.sdk_schema import SDK_SCHEMA_IDENTITY
 if TYPE_CHECKING:
     from pathlib import Path
 
-# Stage 4 of the single-source-of-truth track (docs/seam-contracts-decisions.md,
-# seam 4): the validator image bakes a schema it must not drift from. These
+# Stage 4 of the single-source-of-truth track (seam 4): the validator image bakes a schema it must not drift from. These
 # tests fence the identity, its ratchet against the committed expected value,
 # and the loud startup rejection of a stale image.
 

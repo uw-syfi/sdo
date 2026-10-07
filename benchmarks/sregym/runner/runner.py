@@ -731,7 +731,7 @@ def run_pipeline(
                 if receipt_error is not None and teardown_error is not None:
                     receipt_error = f"{receipt_error} ({teardown_error})"
                 if receipt_error is not None and config.continue_on_agent_failure and teardown_error is None:
-                    # A rejected receipt is that stage's own agent outcome (D30); the
+                    # A rejected receipt is that stage's own agent outcome; the
                     # other stages' evidence stands and the teardown itself succeeded.
                     state.stages[index].status = "agent_failure"
                     state.stages[index].error = f"deferred strict receipt: {receipt_error}"

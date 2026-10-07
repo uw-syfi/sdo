@@ -58,7 +58,7 @@ def _contract_fixture(name: str) -> str:
         ),
         (
             # The same no-op reported as cancelled (phase-1 S3 flicker stages): health cleared with
-            # no mutation by the responder, so it is not a mitigation and not merely cancelled (D30).
+            # no mutation by the responder, so it is not a mitigation and not merely cancelled.
             lambda facts: facts.model_copy(
                 update={
                     "result": facts.result.model_copy(update={"status": IncidentStatus.CANCELLED, "repair_actions": []})
@@ -145,7 +145,7 @@ def test_outcome_records_the_diagnosis_verification() -> None:
 
 
 def test_outcome_verifies_state_change_evidence_against_the_controllers_closing_diff() -> None:
-    """N11: OutcomeFacts.final_state_changes is the controller's diff as of
+    """OutcomeFacts.final_state_changes is the controller's diff as of
 
     verification time. A composite's later fault can land after the
     request's dispatch-time diff was taken but is present here; derive_outcome
@@ -240,7 +240,7 @@ def _blaming(kind: str, name: str) -> ConfirmedRootCause:
 
 
 def test_health_restored_by_someone_else_is_an_external_recovery_not_a_success() -> None:
-    """F8: every cited cause is unattributed, so SDO did not recover the incident."""
+    """Every cited cause is unattributed, so SDO did not recover the incident."""
 
     wrong = ConfirmedRootCause(
         summary="frontend pods are wedged",

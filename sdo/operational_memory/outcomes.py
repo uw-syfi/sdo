@@ -31,11 +31,11 @@ class OutcomeFacts(BaseModel):
     # The controller's configuration diff against the healthy baseline as of
     # verification time (its closing view). It can name a composite's later
     # fault that landed after the request's dispatch-time diff was taken
-    # (N11); ``verify_diagnosis`` checks state-change evidence against both.
+    # ``verify_diagnosis`` checks state-change evidence against both.
     final_state_changes: StateChanges | None = None
     # When the controller saw the health detectors begin their final clear
     # streak. A repair action backs a root cause only if it started by then
-    # (F8). None from controllers that predate it.
+    # None from controllers that predate it.
     health_cleared_at: datetime | None = None
     # Every object the controller saw differ from the baseline while the
     # incident was open, with when it first saw it. A state-change citation
@@ -130,7 +130,7 @@ def _classification(facts: OutcomeFacts, verification: list[RootCauseVerificatio
         return OutcomeClassification.FALSE_POSITIVE
     if recovered_by_responder(verification) is False:
         # Health cleared in time, but the responder's own repair backs none of
-        # its causes: someone else recovered the incident (F8).
+        # its causes: someone else recovered the incident.
         return OutcomeClassification.EXTERNAL_RECOVERY
     return OutcomeClassification.SUCCESS
 
@@ -148,7 +148,7 @@ def _no_recorded_repair(facts: OutcomeFacts) -> bool:
     bad is never reclassified here; the broker rejects that before an outcome
     exists (see ``BrokerService._validate_recorded_actions``).
     The classification is
-    ``CLEARED_WITHOUT_ACTION`` so reports never count it as a mitigation (D30).
+    ``CLEARED_WITHOUT_ACTION`` so reports never count it as a mitigation.
     """
 
     return (

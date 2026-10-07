@@ -114,7 +114,7 @@ def pause_apiserver(ctx: ChaosContext, seconds: float = 25.0) -> None:
 
 
 def heal_fault(ctx: ChaosContext) -> None:
-    """Remove the deny-all NetworkPolicy while the responder waits, as a self-healing transient would (F16)."""
+    """Remove the deny-all NetworkPolicy while the responder waits, as a self-healing transient would."""
 
     ctx.wait_for(lambda: bool(responder_running(ctx)), "a running responder pod")
     time.sleep(5)

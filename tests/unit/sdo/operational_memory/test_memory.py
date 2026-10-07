@@ -857,7 +857,7 @@ def _verbs_on(role: dict, group: str, resource: str) -> set[str]:
 
 
 def test_responder_role_grants_exec_attach_and_portforward_in_the_application_namespace() -> None:
-    """Exec parity (fairness-DECISIONS.md): the same reach as the Codex baseline behind the agent proxy."""
+    """Exec parity: the same reach as the Codex baseline behind the agent proxy."""
     role = _rbac_role("sdo-responder")
 
     for subresource in ("pods/exec", "pods/attach", "pods/portforward"):

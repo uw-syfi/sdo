@@ -105,7 +105,7 @@ SCENARIOS: dict[str, tuple[IncidentSpec, ...]] = {
             expect=Expectation(resolution="not-mitigated", not_learned=(CLAIMED_DETECTOR, NP_DETECTOR)),
         ),
     ),
-    # F16: the fault heals by itself while the responder waits; the responder claims ``completed``
+    # The fault heals by itself while the responder waits; the responder claims ``completed``
     # with no repair action. SDO must record it as cleared without action, learn nothing, and dispatch the next one.
     "healed-stray": (
         incident(

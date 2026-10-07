@@ -13,7 +13,7 @@ import (
 	"sdo.dev/controller/sdk/traffic"
 )
 
-// Traffic workload conformance ratchet (docs/seam-contracts-decisions.md):
+// Traffic workload conformance ratchet:
 // proto/sdodev/contracts/v1alpha1/traffic.proto is the single schema SOURCE for
 // the `.sdo/diagnostics/traffic/workloads/<name>.yaml` artifact, and these tests
 // make drift a build failure on the Go side.

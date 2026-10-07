@@ -69,8 +69,7 @@ jobs:
       - run: go test -race ./...
         working-directory: controller/${{ matrix.module }}
 
-  # Proto contracts are the single source of truth for the cross-seam types
-  # (docs/seam-contracts-decisions.md). This job lints the .proto source, checks
+  # Proto contracts are the single source of truth for the cross-seam types. This job lints the .proto source, checks
   # it stays wire-compatible with main, and asserts the committed Go/Python
   # codegen matches `buf generate` — so schema drift is a build failure here.
   proto:

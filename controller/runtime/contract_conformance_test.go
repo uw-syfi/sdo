@@ -23,7 +23,7 @@ func mustTime(t *testing.T, value string) time.Time {
 	return parsed
 }
 
-// Stage 2a conformance ratchet (docs/seam-contracts-decisions.md): the proto
+// Stage 2a conformance ratchet: the proto
 // messages are the single schema SOURCE for the controller<->responder tree,
 // and these tests make drift a build failure.
 //

@@ -43,8 +43,8 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Iterator, Mapping
 
 #: Recoveries the responder is not credited with: health that cleared only
-#: after the verification window (F4), or that the responder's own repair
-#: does not back (F8). The broker never reflects on them.
+#: after the verification window, or that the responder's own repair
+#: does not back. The broker never reflects on them.
 _UNCREDITED_RECOVERIES = frozenset(
     {
         OutcomeClassification.PARTIAL,
@@ -139,7 +139,7 @@ class BrokerClosure(BaseModel):
     # finding; learning evidence only, never a closure gate.
     incident_detector_states: list[DetectorEvaluation] = Field(default_factory=list)
     # The controller's configuration diff against the healthy baseline as of
-    # verification time (N11); can name a composite's later fault the
+    # verification time; can name a composite's later fault the
     # dispatch-time request diff missed. None without a baseline.
     final_state_changes: StateChanges | None = None
     # Firing telemetry for this incident window; analysis evidence, never a
@@ -155,7 +155,7 @@ class BrokerClosure(BaseModel):
     dispatched_at: datetime
     responder_completed_at: datetime
     verified_at: datetime
-    # When the health detectors began their final clear streak (F8): only a
+    # When the health detectors began their final clear streak: only a
     # repair action that started by then can back a root cause. None from
     # controllers that predate it.
     health_cleared_at: datetime | None = None
@@ -643,7 +643,7 @@ class BrokerService:
         session_id = None if closure.result is None else closure.result.responder_session_id
         health_verified = closure.health_verified
         # The broker owns learning: a recovery the responder is not credited
-        # with is never learned, whatever the reflector would decide (F4, F8).
+        # with is never learned, whatever the reflector would decide.
         if outcome.classification in _UNCREDITED_RECOVERIES or not self.reflector.should_reflect(
             outcome, health_verified=health_verified, session_id=session_id
         ):

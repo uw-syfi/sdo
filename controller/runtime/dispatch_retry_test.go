@@ -116,7 +116,7 @@ func TestTransientDispatchFailureRetriesWithBoundedJitteredBackoff(t *testing.T)
 }
 
 // A responder Job that Kubernetes marks failed is a terminal dispatch
-// failure (F9): it must never be scheduled for another attempt, regardless
+// failure: it must never be scheduled for another attempt, regardless
 // of the dispatch retry backoff policy.
 func TestTerminalDispatchFailureNeverRetriesUnderBackoffPolicy(t *testing.T) {
 	now := time.Unix(1000, 0).UTC()
