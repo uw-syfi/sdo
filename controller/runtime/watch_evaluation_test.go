@@ -103,7 +103,7 @@ func TestKubernetesCacheDeliversConfigMapDeleteQueuedBehindPodBacklog(t *testing
 	}
 	awaitConfigMapAbsent(t, informerCache, "mongo-geo-script")
 
-	events := informerCache.TakeEvents()
+	events := takeEventsThrough(t, informerCache, "Pod", "ConfigMap")
 	want := map[sdk.WatchKind]bool{
 		{APIVersion: "v1", Kind: "Pod", Namespace: "demo"}:       false,
 		{APIVersion: "v1", Kind: "ConfigMap", Namespace: "demo"}: false,
@@ -203,7 +203,7 @@ func TestControllerEvaluatesConfigMapWatcherAfterDeleteBehindPodBacklog(t *testi
 	awaitConfigMapAbsent(t, informerCache, "mongo-geo-script")
 
 	faultObserved := start.Add(time.Second)
-	if err := controller.StepEvents(ctx, faultObserved, informerCache.TakeEvents()); err != nil {
+	if err := controller.StepEvents(ctx, faultObserved, takeEventsThrough(t, informerCache, "ConfigMap")); err != nil {
 		t.Fatalf("event step: %v", err)
 	}
 	if got := lastEvaluation(controller.ExportState().History, incident.spec.ID); got.Status != DetectorEvaluationFiring ||
@@ -419,4 +419,35 @@ func requestSurfacesPlaybook(request IncidentRequest, path string) bool {
 		}
 	}
 	return false
+}
+
+// takeEventsThrough drains the cache's pending watch events until each of kinds
+// has been delivered. An informer updates its store before it notifies its
+// handlers, so a store that already reflects a change does not mean the
+// matching event is pending yet; under load (e.g. -race in CI) it can lag.
+func takeEventsThrough(t *testing.T, informerCache *KubernetesCache, kinds ...string) []sdk.WatchKind {
+	t.Helper()
+	missing := make(map[string]bool, len(kinds))
+	for _, kind := range kinds {
+		missing[kind] = true
+	}
+	var events []sdk.WatchKind
+	seen := make(map[sdk.WatchKind]bool)
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		for _, event := range informerCache.TakeEvents() {
+			if !seen[event] {
+				seen[event] = true
+				events = append(events, event)
+			}
+			delete(missing, event.Kind)
+		}
+		if len(missing) == 0 {
+			return events
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("watch events for %v were never delivered; got %v", missing, events)
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
 }
