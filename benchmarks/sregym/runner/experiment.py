@@ -89,7 +89,6 @@ def application_workspace_mode(value: ApplicationWorkspaceSetting) -> Applicatio
 @dataclass
 class RunnerEnv:
     judge_model_id: str = ""
-    crucible_seed_kb_dir: str = ""
     worker_cpu_limit: str = ""
     reuse_cluster: bool = False
     force_recreate_cluster: bool = False
@@ -111,47 +110,16 @@ class RunnerEnv:
             raise ValueError(f"env.kind_worker_nodes must not be negative, got {self.kind_worker_nodes}")
 
 
-def promote_crucible_legacy_config(
-    *,
-    agent: str,
-    agent_config: dict[str, dict[str, Any]],
-    enable_summary: bool,
-    no_inject_summary: bool,
-    crucible_seed_kb_dir: str = "",
-) -> dict[str, dict[str, Any]]:
-    """Move legacy runner/env Crucible settings into ``agent.crucible``.
-
-    Older experiment files stored KB settings under ``[runner]`` and
-    ``[runner.env]`` because sregym forwarded them as generic summary flags.
-    Crucible now owns those fields, while this promotion keeps old TOMLs and
-    snapshots readable.
-    """
-    normalized = copy.deepcopy(agent_config)
-    if agent != "crucible":
-        return normalized
-
-    crucible_cfg = normalized.setdefault("crucible", {})
-    if "seed_kb_dir" not in crucible_cfg and "crucible_seed_kb_dir" in crucible_cfg:
-        crucible_cfg["seed_kb_dir"] = crucible_cfg.pop("crucible_seed_kb_dir")
-    crucible_cfg.setdefault("enable_summary", enable_summary)
-    crucible_cfg.setdefault("no_inject_summary", no_inject_summary)
-    if crucible_seed_kb_dir:
-        crucible_cfg.setdefault("seed_kb_dir", crucible_seed_kb_dir)
-    return normalized
-
-
 @dataclass
 class ExperimentConfig:
     # Runner settings (become CLI args to third_party/sregym/main.py)
-    agent: str = "crucible"
+    agent: str = "sdo_codex"
     model: str = "google-vertex:gemini-2.5-flash"
     parallel: int = 4
     agent_timeout: int = 1800
     app_filter: str = ""
     deploy_from_source: bool = False
     application_workspace: ApplicationWorkspaceSetting = False
-    enable_summary: bool = True
-    no_inject_summary: bool = True
     # Independent end-to-end attempts per selected problem, passed to SREGym as
     # --n-attempts. The parallel runner expands each problem into ``repeat``
     # consecutive tasks (A A B B), each with its own runs/<seq>_<problem>/ dir,
@@ -246,7 +214,6 @@ def load_experiment_config(path: Path) -> ExperimentConfig:
 
     env = RunnerEnv(
         judge_model_id=env_raw.get("judge_model_id", ""),
-        crucible_seed_kb_dir=env_raw.get("crucible_seed_kb_dir", ""),
         worker_cpu_limit=str(env_raw.get("worker_cpu_limit", "")),
         reuse_cluster=bool(env_raw.get("reuse_cluster", False)),
         force_recreate_cluster=bool(env_raw.get("force_recreate_cluster", False)),
@@ -261,16 +228,8 @@ def load_experiment_config(path: Path) -> ExperimentConfig:
         kind_worker_nodes=int(env_raw.get("kind_worker_nodes", 0)),
     )
 
-    agent = runner.get("agent", "crucible")
-    enable_summary = runner.get("enable_summary", True)
-    no_inject_summary = runner.get("no_inject_summary", True)
-    agent_config = promote_crucible_legacy_config(
-        agent=agent,
-        agent_config=raw.get("agent", {}),
-        enable_summary=enable_summary,
-        no_inject_summary=no_inject_summary,
-        crucible_seed_kb_dir=str(env_raw.get("crucible_seed_kb_dir", "")),
-    )
+    agent = runner.get("agent", "sdo_codex")
+    agent_config = copy.deepcopy(raw.get("agent", {}))
 
     return ExperimentConfig(
         agent=agent,
@@ -280,8 +239,6 @@ def load_experiment_config(path: Path) -> ExperimentConfig:
         app_filter=runner.get("app_filter", ""),
         deploy_from_source=runner.get("deploy_from_source", False),
         application_workspace=runner.get("application_workspace", False),
-        enable_summary=enable_summary,
-        no_inject_summary=no_inject_summary,
         repeat=runner.get("repeat", 1),
         sequence_len=runner.get("sequence_len", 0),
         sequence_seed=runner.get("sequence_seed", 42),
@@ -354,16 +311,8 @@ def resolve_config(
 
 
 def effective_agent_config(config: ExperimentConfig) -> dict[str, Any]:
-    """Return the selected agent's config after legacy promotion."""
-    agent_config = promote_crucible_legacy_config(
-        agent=config.agent,
-        agent_config=config.agent_config,
-        enable_summary=config.enable_summary,
-        no_inject_summary=config.no_inject_summary,
-        crucible_seed_kb_dir=config.env.crucible_seed_kb_dir,
-    )
-    selected = copy.deepcopy(agent_config.get(config.agent, {}))
-    return selected
+    """Return a copy of the selected agent's config."""
+    return copy.deepcopy(config.agent_config.get(config.agent, {}))
 
 
 _SNAPSHOT_FILENAME = "experiment_config.toml"
@@ -442,7 +391,7 @@ def _resolve_tasklist_source(tasklist_ref: str, sregym_dir: Path) -> Path:
 
 #: Agents launched from this repository's registry (``benchmarks/sregym/registry.yaml``) instead of the
 #: harness's ``agents.yaml``. ``codex`` is here only to pin its CLI version to the one the SDO images use.
-_EXTERNAL_AGENTS = {"codex", "crucible", "sdo_codex"}
+_EXTERNAL_AGENTS = {"codex", "sdo_codex"}
 #: Namespace label the SDO installer puts on a separate controller namespace;
 #: the harness keeps namespaces with this label across problems when told to.
 PERSISTENT_CONTROLLER_NAMESPACE_LABEL = "sdo.dev/controller-namespace"
@@ -679,14 +628,7 @@ def _serialize_config(config: ExperimentConfig) -> str:
     lines.append(f"docker_builder = {_toml_value(config.env.docker_builder)}")
     lines.append(f"kind_worker_nodes = {_toml_value(config.env.kind_worker_nodes)}")
 
-    agent_configs = promote_crucible_legacy_config(
-        agent=config.agent,
-        agent_config=config.agent_config,
-        enable_summary=config.enable_summary,
-        no_inject_summary=config.no_inject_summary,
-        crucible_seed_kb_dir=config.env.crucible_seed_kb_dir,
-    )
-    for agent_name, agent_cfg in agent_configs.items():
+    for agent_name, agent_cfg in config.agent_config.items():
         lines.append("")
         lines.append(f"[agent.{agent_name}]")
         for k, v in agent_cfg.items():

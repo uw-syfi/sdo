@@ -12,8 +12,6 @@ parallel = 1
 agent_timeout = 3600
 app_filter = "hotel_reservation"
 deploy_from_source = true
-enable_summary = false
-no_inject_summary = true
 problems = ["missing_configmap_hotel_reservation"]
 
 [runner.env]

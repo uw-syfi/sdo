@@ -6,7 +6,6 @@ import dataclasses
 import json
 import textwrap
 from pathlib import Path
-from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
@@ -29,9 +28,6 @@ from benchmarks.sregym.runner.pipeline import (
 )
 from benchmarks.sregym.runner.runner import _stage_results_error
 
-if TYPE_CHECKING:
-    from benchmarks.sregym.runner.experiment import ExperimentConfig
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -48,7 +44,7 @@ PIPELINE_TOML = """\
 name = "test-pipeline"
 
 [defaults]
-agent = "crucible"
+agent = "sdo_codex"
 model = "gemini-flash"
 parallel = 4
 app_filter = "hotel_reservation"
@@ -67,7 +63,6 @@ seed = 99
 
 [[stages]]
 name = "build_kb"
-chain_kb = false
 chain_application_workspace = false
 
 [stages.runner]
@@ -79,7 +74,6 @@ count = 16
 
 [[stages]]
 name = "evaluate"
-chain_kb = true
 chain_application_workspace = true
 
 [stages.runner]
@@ -266,7 +260,7 @@ def test_stage_results_error_rejects_malformed_or_invalid_strict_receipt(
 
 SINGLE_EXPERIMENT_TOML = """\
 [runner]
-agent = "crucible"
+agent = "sdo_codex"
 model = "gemini-flash"
 parallel = 4
 
@@ -278,9 +272,8 @@ count = 8
 judge_model_id = "judge-model"
 worker_cpu_limit = "16"
 
-[agent.crucible]
-enable_judge = true
-seed_kb_dir = ""
+[agent.sdo_codex]
+persistent_controller = true
 """
 
 
@@ -297,12 +290,10 @@ class TestLoadPipelineConfig:
         assert config.name == "test-pipeline"
         assert len(config.stages) == 2
         assert config.stages[0].name == "build_kb"
-        assert config.stages[0].chain_kb is False
         assert config.stages[0].chain_application_workspace is False
         assert config.stages[0].runner_overrides["parallel"] == 8
         assert config.stages[0].runner_overrides["variants"]["enabled"] is True
         assert config.stages[1].name == "evaluate"
-        assert config.stages[1].chain_kb is True
         assert config.stages[1].chain_application_workspace is True
         assert config.stages[1].runner_overrides["tasklist"] == "count_train"
         assert config.defaults["model"] == "gemini-flash"
@@ -355,7 +346,7 @@ class TestIsPipelineConfig:
 class TestMergeStageConfig:
     def test_defaults_only(self) -> None:
         defaults = {
-            "agent": "crucible",
+            "agent": "sdo_codex",
             "model": "gemini-flash",
             "parallel": 1,
             "agent_timeout": 3600,
@@ -372,7 +363,7 @@ class TestMergeStageConfig:
             },
         }
         config = merge_stage_config(defaults, {})
-        assert config.agent == "crucible"
+        assert config.agent == "sdo_codex"
         assert config.model == "gemini-flash"
         assert config.parallel == 1
         assert config.agent_timeout == 3600
@@ -417,7 +408,7 @@ class TestMergeStageConfig:
 
     def test_with_overrides(self) -> None:
         defaults = {
-            "agent": "crucible",
+            "agent": "sdo_codex",
             "model": "gemini-flash",
             "parallel": 4,
             "variants": {"seed": 99, "enabled": False},
@@ -426,7 +417,7 @@ class TestMergeStageConfig:
         config = merge_stage_config(defaults, overrides)
         assert config.model == "gemini-pro"
         assert config.parallel == 8
-        assert config.agent == "crucible"  # inherited
+        assert config.agent == "sdo_codex"  # inherited
 
     def test_workspace_related_fields_are_preserved(self) -> None:
         defaults = {
@@ -481,31 +472,14 @@ class TestMergeStageConfig:
 
     def test_agent_config_override(self) -> None:
         defaults = {
-            "agent_config": {"crucible": {"enable_judge": True, "kb_type": "structured"}},
+            "agent_config": {"sdo_codex": {"persistent_controller": True, "controller_image": "img:1"}},
         }
         overrides = {
-            "agent_config": {"crucible": {"enable_judge": False}},
+            "agent_config": {"sdo_codex": {"persistent_controller": False}},
         }
         config = merge_stage_config(defaults, overrides)
-        assert config.agent_config["crucible"]["enable_judge"] is False
-        assert config.agent_config["crucible"]["kb_type"] == "structured"
-
-    def test_legacy_crucible_runner_fields_promoted(self) -> None:
-        defaults = {
-            "agent": "crucible",
-            "enable_summary": True,
-            "no_inject_summary": True,
-            "env": {"crucible_seed_kb_dir": "/tmp/default-kb", "judge_model_id": "judge-default"},
-        }
-        overrides = {
-            "agent_config": {"crucible": {"no_inject_summary": False}},
-        }
-        config = merge_stage_config(defaults, overrides)
-        assert config.agent_config["crucible"]["enable_summary"] is True
-        assert config.agent_config["crucible"]["no_inject_summary"] is False
-        assert config.agent_config["crucible"]["seed_kb_dir"] == "/tmp/default-kb"
-        assert "judge_model_id" not in config.agent_config["crucible"]
-        assert config.env.judge_model_id == "judge-default"
+        assert config.agent_config["sdo_codex"]["persistent_controller"] is False
+        assert config.agent_config["sdo_codex"]["controller_image"] == "img:1"
 
 
 # ---------------------------------------------------------------------------
@@ -558,7 +532,7 @@ class TestPipelineState:
             name="p",
             workspace_seed="/seeds/lifecycle",
             continue_on_agent_failure=True,
-            stages=[StageConfig(name="s0", chain_kb=False)],
+            stages=[StageConfig(name="s0")],
         )
         write_pipeline_snapshot(config, tmp_path)
 
@@ -584,28 +558,6 @@ class TestPipelineState:
 
 
 # ---------------------------------------------------------------------------
-# test_chain_kb
-# ---------------------------------------------------------------------------
-
-
-class TestChainKb:
-    def test_chain_kb_sets_seed_dir(self) -> None:
-        """chain_kb=true with a prior KB dir should set Crucible's seed KB config."""
-        defaults = {"agent": "crucible"}
-        config = merge_stage_config(defaults, {})
-        # Simulate what the pipeline runner does
-        prev_kb = "/some/experiment/kb"
-        config.agent_config.setdefault("crucible", {})["seed_kb_dir"] = prev_kb
-        assert config.agent_config["crucible"]["seed_kb_dir"] == prev_kb
-
-    def test_chain_kb_false_no_seed(self) -> None:
-        """chain_kb=false should leave Crucible's seed KB config unset."""
-        defaults = {"agent": "crucible"}
-        config = merge_stage_config(defaults, {})
-        assert "seed_kb_dir" not in config.agent_config.get("crucible", {})
-
-
-# ---------------------------------------------------------------------------
 # test_pipeline_snapshot
 # ---------------------------------------------------------------------------
 
@@ -614,10 +566,10 @@ class TestPipelineSnapshot:
     def test_write_and_read(self, tmp_path: Path) -> None:
         config = PipelineConfig(
             name="snap-test",
-            defaults={"agent": "crucible", "model": "gemini-flash"},
+            defaults={"agent": "sdo_codex", "model": "gemini-flash"},
             stages=[
-                StageConfig(name="s0", chain_kb=False, runner_overrides={"parallel": 8}),
-                StageConfig(name="s1", chain_kb=True, chain_application_workspace=True),
+                StageConfig(name="s0", runner_overrides={"parallel": 8}),
+                StageConfig(name="s1", chain_application_workspace=True),
             ],
         )
         write_pipeline_snapshot(config, tmp_path)
@@ -627,9 +579,7 @@ class TestPipelineSnapshot:
         assert loaded.name == "snap-test"
         assert len(loaded.stages) == 2
         assert loaded.stages[0].name == "s0"
-        assert loaded.stages[0].chain_kb is False
         assert loaded.stages[0].chain_application_workspace is False
-        assert loaded.stages[1].chain_kb is True
         assert loaded.stages[1].chain_application_workspace is True
 
 
@@ -644,10 +594,10 @@ class TestResetStagesForRerun:
         config = PipelineConfig(
             name="rerun-test",
             stages=[
-                StageConfig(name="s0", chain_kb=False),
-                StageConfig(name="s1", chain_kb=True),
-                StageConfig(name="s2", chain_kb=True, chain_application_workspace=True),
-                StageConfig(name="s3", chain_kb=False),
+                StageConfig(name="s0"),
+                StageConfig(name="s1"),
+                StageConfig(name="s2", chain_application_workspace=True),
+                StageConfig(name="s3"),
             ],
         )
 
@@ -743,10 +693,10 @@ class TestPipelineRunner:
     def _make_config(self) -> PipelineConfig:
         return PipelineConfig(
             name="test",
-            defaults={"agent": "crucible", "model": "gemini-flash"},
+            defaults={"agent": "sdo_codex", "model": "gemini-flash"},
             stages=[
-                StageConfig(name="build", chain_kb=False),
-                StageConfig(name="eval", chain_kb=True),
+                StageConfig(name="build"),
+                StageConfig(name="eval"),
             ],
         )
 
@@ -965,152 +915,6 @@ class TestPipelineRunner:
         assert rc == 0
         assert len(calls) == 1  # only stage 1 ran
 
-    def test_kb_chaining_sets_seed_on_config(self, sregym_dir, tmp_path: Path) -> None:
-        config = self._make_config()
-        captured_configs = []
-
-        def mock_run_stage(exp_config, stage_exp_dir, tasklist_path, sregym_dir, project_root, extra_env=None):
-            captured_configs.append(exp_config)
-            return 0
-
-        pipeline_dir = tmp_path / "pipeline"
-        pipeline_dir.mkdir()
-
-        with patch.object(runner_mod, "_run_stage", side_effect=mock_run_stage):
-            state = PipelineState(
-                stages=[
-                    StageState(index=0, name="build"),
-                    StageState(index=1, name="eval"),
-                ]
-            )
-            write_pipeline_state(state, pipeline_dir)
-            write_pipeline_snapshot(config, pipeline_dir)
-            runner_mod.run_pipeline(
-                config,
-                project_root=tmp_path,
-                sregym_dir=sregym_dir,
-                pipeline_dir=pipeline_dir,
-                state=state,
-            )
-
-        # Stage 0 should not have seed_kb_dir set (chain_kb=false)
-        assert "seed_kb_dir" not in captured_configs[0].agent_config.get("crucible", {})
-
-        # Stage 1 should have seed_kb_dir pointing to stage 0's kb/
-        seed_dir = captured_configs[1].agent_config["crucible"]["seed_kb_dir"]
-        assert seed_dir.endswith("/stage_0_build/kb")
-
-    def test_hooks_invoked_for_kb_barrier(self, sregym_dir, tmp_path: Path) -> None:
-        """before_stage + snapshot_before_drain + wait_for_drain fire around
-        a stage whose successor chains its KB."""
-        config = self._make_config()
-        before_calls = []
-        snapshot_calls = []
-        wait_calls = []
-        sentinel = object()
-
-        def mock_run_stage(exp_config, stage_exp_dir, tasklist_path, sregym_dir, project_root, extra_env=None):
-            return 0
-
-        def before_stage(exp_dir, cfg):
-            before_calls.append(exp_dir)
-
-        def snap(exp_dir, cfg):
-            snapshot_calls.append(exp_dir)
-            return sentinel
-
-        def wait(exp_dir, baseline):
-            wait_calls.append((exp_dir, baseline))
-
-        class _Lifecycle:
-            def before_stage(self, exp_dir: Path, config: ExperimentConfig) -> None:
-                before_stage(exp_dir, config)
-
-            def snapshot_before_drain(self, exp_dir: Path, config: ExperimentConfig) -> object | None:
-                return snap(exp_dir, config)
-
-            def wait_for_drain(self, exp_dir: Path, baseline: object | None) -> None:
-                wait(exp_dir, baseline)
-
-        lifecycle = _Lifecycle()
-
-        pipeline_dir = tmp_path / "pipeline"
-        pipeline_dir.mkdir()
-
-        with patch.object(runner_mod, "_run_stage", side_effect=mock_run_stage):
-            state = PipelineState(
-                stages=[
-                    StageState(index=0, name="build"),
-                    StageState(index=1, name="eval"),
-                ]
-            )
-            write_pipeline_state(state, pipeline_dir)
-            write_pipeline_snapshot(config, pipeline_dir)
-            rc = runner_mod.run_pipeline(
-                config,
-                project_root=tmp_path,
-                sregym_dir=sregym_dir,
-                pipeline_dir=pipeline_dir,
-                state=state,
-                lifecycle=lifecycle,
-            )
-
-        assert rc == 0
-        # before_stage fires for both stages
-        assert before_calls == [
-            pipeline_dir / "stage_0_build",
-            pipeline_dir / "stage_1_eval",
-        ]
-        # snapshot + wait fire only around stage 0 (stage 1 chains from it)
-        assert snapshot_calls == [pipeline_dir / "stage_0_build"]
-        assert wait_calls == [(pipeline_dir / "stage_0_build", sentinel)]
-
-    def test_abort_on_kb_queue_drain_failure(self, sregym_dir, tmp_path: Path) -> None:
-        config = self._make_config()
-
-        def wait_fails(exp_dir, baseline):
-            raise TimeoutError("queue stuck")
-
-        class _Lifecycle:
-            def before_stage(self, exp_dir: Path, config: ExperimentConfig) -> None:
-                del exp_dir, config
-
-            def snapshot_before_drain(self, exp_dir: Path, config: ExperimentConfig) -> object | None:
-                del exp_dir, config
-                return object()
-
-            def wait_for_drain(self, exp_dir: Path, baseline: object | None) -> None:
-                wait_fails(exp_dir, baseline)
-
-        lifecycle = _Lifecycle()
-
-        pipeline_dir = tmp_path / "pipeline"
-        pipeline_dir.mkdir()
-
-        with patch.object(runner_mod, "_run_stage", return_value=0):
-            state = PipelineState(
-                stages=[
-                    StageState(index=0, name="build"),
-                    StageState(index=1, name="eval"),
-                ]
-            )
-            write_pipeline_state(state, pipeline_dir)
-            write_pipeline_snapshot(config, pipeline_dir)
-            rc = runner_mod.run_pipeline(
-                config,
-                project_root=tmp_path,
-                sregym_dir=sregym_dir,
-                pipeline_dir=pipeline_dir,
-                state=state,
-                lifecycle=lifecycle,
-            )
-
-        assert rc == 1
-        loaded_state = read_pipeline_state(pipeline_dir)
-        assert loaded_state.stages[0].status == "failed"
-        assert loaded_state.stages[0].error == "kb queue drain failed: queue stuck"
-        assert loaded_state.stages[1].status == "pending"
-
     def test_chain_application_workspace_sets_seed_env(self, sregym_dir, tmp_path: Path) -> None:
         config = PipelineConfig(
             name="test",
@@ -1123,8 +927,8 @@ class TestPipelineRunner:
                 "application_workspace": True,
             },
             stages=[
-                StageConfig(name="build", chain_kb=False),
-                StageConfig(name="eval", chain_kb=False, chain_application_workspace=True),
+                StageConfig(name="build"),
+                StageConfig(name="eval", chain_application_workspace=True),
             ],
         )
         captured_envs = []
@@ -1225,8 +1029,8 @@ class TestPipelineRunner:
                 "application_workspace": True,
             },
             stages=[
-                StageConfig(name="build", chain_kb=False),
-                StageConfig(name="eval", chain_kb=False, chain_application_workspace=True),
+                StageConfig(name="build"),
+                StageConfig(name="eval", chain_application_workspace=True),
             ],
         )
 
@@ -1267,10 +1071,9 @@ class TestPipelineRunner:
                 "application_workspace": True,
             },
             stages=[
-                StageConfig(name="build", chain_kb=False),
+                StageConfig(name="build"),
                 StageConfig(
                     name="eval",
-                    chain_kb=False,
                     chain_application_workspace=True,
                     runner_overrides={"application_workspace": False},
                 ),
@@ -1314,10 +1117,9 @@ class TestPipelineRunner:
                 "application_workspace": "persistent",
             },
             stages=[
-                StageConfig(name="build", chain_kb=False),
+                StageConfig(name="build"),
                 StageConfig(
                     name="eval",
-                    chain_kb=False,
                     chain_application_workspace=True,
                     runner_overrides={"application_workspace": "ephemeral"},
                 ),
@@ -1361,10 +1163,9 @@ class TestPipelineRunner:
                 "application_workspace": True,
             },
             stages=[
-                StageConfig(name="build", chain_kb=False),
+                StageConfig(name="build"),
                 StageConfig(
                     name="eval",
-                    chain_kb=False,
                     chain_application_workspace=True,
                     runner_overrides={"app_filter": "social_network"},
                 ),
@@ -1404,11 +1205,11 @@ class TestPipelineRunner:
     def test_resume_extends_state_for_new_stage(self, sregym_dir, tmp_path: Path) -> None:
         config = PipelineConfig(
             name="test",
-            defaults={"agent": "crucible", "model": "gemini-flash"},
+            defaults={"agent": "sdo_codex", "model": "gemini-flash"},
             stages=[
-                StageConfig(name="build", chain_kb=False),
-                StageConfig(name="eval", chain_kb=True),
-                StageConfig(name="eval_again", chain_kb=False),
+                StageConfig(name="build"),
+                StageConfig(name="eval"),
+                StageConfig(name="eval_again"),
             ],
         )
 
@@ -1458,7 +1259,7 @@ class TestPersistentControllerPipeline:
                 "require_strict_receipt": True,
                 "agent_config": {"sdo_codex": {"persistent_controller": True}},
             },
-            stages=[StageConfig(name="first", chain_kb=False), StageConfig(name="second", chain_kb=False)],
+            stages=[StageConfig(name="first"), StageConfig(name="second")],
         )
 
     def _run(

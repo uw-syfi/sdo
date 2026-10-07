@@ -41,7 +41,7 @@ def _failing_assurance(fake_host: FakeHost) -> LaunchAssurance:
 def test_a_failed_preflight_aborts_a_pipeline_before_any_directory_or_stage(
     fake_host: FakeHost, sregym_dir: Path
 ) -> None:
-    config = PipelineConfig(name="luna", defaults=LUNA_DEFAULTS, stages=[StageConfig(name="one", chain_kb=False)])
+    config = PipelineConfig(name="luna", defaults=LUNA_DEFAULTS, stages=[StageConfig(name="one")])
 
     with patch("subprocess.run") as launched, pytest.raises(PreflightError, match="disk"):
         runner_mod.run_pipeline(
@@ -82,7 +82,7 @@ def test_the_pipeline_preflight_covers_every_stage(fake_host: FakeHost, sregym_d
     config = PipelineConfig(
         name="luna",
         defaults=LUNA_DEFAULTS,
-        stages=[StageConfig(name="one", chain_kb=False), StageConfig(name="two", runner_overrides={"model": "x"})],
+        stages=[StageConfig(name="one"), StageConfig(name="two", runner_overrides={"model": "x"})],
     )
 
     with patch("subprocess.run") as launched, pytest.raises(PreflightError, match="model differs"):

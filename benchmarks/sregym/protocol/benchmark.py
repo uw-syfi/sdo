@@ -1,6 +1,6 @@
 """Typed representation for the ``<benchmark_result>`` block.
 
-The crucible orchestrator and judge emit a textual ``<benchmark_result>...
+The benchmark conductor and judge emit a textual ``<benchmark_result>...
 </benchmark_result>`` block that is appended to a shared file shown to LLMs.
 Historically that block was constructed inline via f-strings at ~8 sites and
 parsed back out via regex in several places — see GitLab issues #89 and #99.

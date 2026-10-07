@@ -1,6 +1,6 @@
 """Fixtures for the runner tests, and a permissive launch assurance for orchestration tests.
 
-Runner tests exercise orchestration with stub configs (crucible, gemini) and a
+Runner tests exercise orchestration with stub configs (sdo_codex, gemini) and a
 patched ``subprocess.run``; they must never reach Docker, kind, npm or git, so
 every runner call gets a warn-mode :class:`LaunchAssurance` over a fake host.
 """

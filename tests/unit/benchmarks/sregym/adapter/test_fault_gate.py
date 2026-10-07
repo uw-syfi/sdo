@@ -132,7 +132,7 @@ def test_sdo_registry_entry_defers_fault_injection() -> None:
     agents = {agent["name"]: agent for agent in yaml.safe_load(registry.read_text(encoding="utf-8"))["agents"]}
 
     assert agents["sdo_codex"]["defer_fault_injection"] is True
-    assert "defer_fault_injection" not in agents["crucible"]
+    assert "defer_fault_injection" not in agents["codex"]
 
 
 def _maintenance(mode: str, generation: str) -> str:

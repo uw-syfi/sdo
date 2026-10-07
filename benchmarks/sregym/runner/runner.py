@@ -4,23 +4,19 @@ Pure orchestration — resolving configs, creating experiment directories,
 translating :class:`ExperimentConfig` into CLI args + env vars for
 ``third_party/sregym/main.py``, and running pipelines with resume/rerun support.
 
-Participant-specific concerns (for example Crucible's knowledge-base seeding
-and between-stage drain barrier) are injected via :class:`ExpStageLifecycle`.
 This runner stays agent-agnostic.
 """
 
 from __future__ import annotations
 
-import copy
 import csv
-import dataclasses
 import json
 import os
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Literal, Protocol, cast, runtime_checkable
+from typing import Any, Literal, cast
 
 from benchmarks.sregym.protocol import ProductionReceiptValidationError, validate_production_receipt
 from benchmarks.sregym.runner.codex_baseline import ensure_agent_image_supports_prompt_appendix
@@ -92,40 +88,6 @@ def _run_hook(cmd: str, env: dict[str, str], label: str, project_root: Path) -> 
 
 
 # ---------------------------------------------------------------------------
-# Hooks
-# ---------------------------------------------------------------------------
-
-
-@runtime_checkable
-class ExpStageLifecycle(Protocol):
-    """Agent-specific behavior invoked during experiment stage lifecycle."""
-
-    def before_stage(self, exp_dir: Path, config: ExperimentConfig) -> None:
-        """Run before a stage or single experiment starts."""
-
-    def snapshot_before_drain(self, exp_dir: Path, config: ExperimentConfig) -> object | None:
-        """Capture any baseline needed before post-stage drain waiting."""
-
-    def wait_for_drain(self, exp_dir: Path, baseline: object | None) -> None:
-        """Block until any agent-specific post-stage work has drained."""
-
-
-class _NoopExpStageLifecycle:
-    def before_stage(self, exp_dir: Path, config: ExperimentConfig) -> None:
-        del exp_dir, config
-
-    def snapshot_before_drain(self, exp_dir: Path, config: ExperimentConfig) -> object | None:
-        del exp_dir, config
-        return None
-
-    def wait_for_drain(self, exp_dir: Path, baseline: object | None) -> None:
-        del exp_dir, baseline
-
-
-NOOP_EXP_STAGE_LIFECYCLE: ExpStageLifecycle = _NoopExpStageLifecycle()
-
-
-# ---------------------------------------------------------------------------
 # Single experiment
 # ---------------------------------------------------------------------------
 
@@ -180,11 +142,9 @@ def run_single_experiment(
     *,
     project_root: Path,
     sregym_dir: Path,
-    lifecycle: ExpStageLifecycle | None = None,
     assurance: LaunchAssurance | None = None,
 ) -> None:
     """Run or resume a single experiment; the launch preflight runs first and raises on a failure."""
-    lifecycle = lifecycle or NOOP_EXP_STAGE_LIFECYCLE
     assurance = assurance or default_assurance()
 
     if target.is_dir():
@@ -227,8 +187,6 @@ def run_single_experiment(
 
     _print_experiment_info(config, env)
     print()
-
-    lifecycle.before_stage(exp_dir, config)
 
     before_hook, after_hook = _load_agent_hooks(config.agent, project_root)
     if before_hook:
@@ -510,15 +468,13 @@ def run_pipeline(
     sregym_dir: Path,
     pipeline_dir: Path | None = None,
     state: PipelineState | None = None,
-    lifecycle: ExpStageLifecycle | None = None,
     assurance: LaunchAssurance | None = None,
 ) -> int:
-    """Run a multi-stage pipeline with automatic KB chaining.
+    """Run a multi-stage pipeline with application-workspace chaining.
 
     The launch preflight covers every stage and runs before the pipeline
     directory exists; a failure raises :class:`PreflightError`.
     """
-    lifecycle = lifecycle or NOOP_EXP_STAGE_LIFECYCLE
     assurance = assurance or default_assurance()
 
     _verify_sregym(sregym_dir)
@@ -572,7 +528,6 @@ def run_pipeline(
     if before_hook:
         _run_hook(before_hook, hook_env, "before_benchmark", project_root)
 
-    prev_kb_dir: str | None = None
     persistent_state = pipeline_dir / _PERSISTENT_STATE_FILENAME
     # Stages whose strict receipts are written by the next stage's drain or by teardown.
     deferred_receipt_stages: list[tuple[int, Path]] = []
@@ -583,8 +538,6 @@ def run_pipeline(
             stage_state = state.stages[i]
 
             if stage_state.status in ("completed", "agent_failure"):
-                if stage_state.experiment_dir:
-                    prev_kb_dir = str(Path(stage_state.experiment_dir) / "kb")
                 print(
                     f"Stage {i}/{len(config.stages) - 1}: "
                     f"{stage_cfg.name or f'stage_{i}'} [skipped — already {stage_state.status}]"
@@ -593,15 +546,6 @@ def run_pipeline(
 
             exp_config = merge_stage_config(config.defaults, stage_cfg.runner_overrides)
             exp_config = resolve_config(exp_config)
-
-            if stage_cfg.chain_kb and prev_kb_dir:
-                agent_config = copy.deepcopy(exp_config.agent_config)
-                if exp_config.agent == "crucible":
-                    agent_config.setdefault("crucible", {})["seed_kb_dir"] = prev_kb_dir
-                exp_config = dataclasses.replace(
-                    exp_config,
-                    agent_config=agent_config,
-                )
 
             stage_name = stage_cfg.name or f"stage_{i}"
             stage_exp_dir = pipeline_dir / f"stage_{i}_{stage_name}"
@@ -617,8 +561,6 @@ def run_pipeline(
 
             print("=" * 60)
             print(f"Stage {i}/{len(config.stages) - 1}: {stage_name}")
-            if stage_cfg.chain_kb and prev_kb_dir:
-                print(f"  KB seed: {prev_kb_dir}")
             stage_extra_env: dict[str, str] = {}
             try:
                 if i == 0 and not stage_cfg.chain_application_workspace:
@@ -645,13 +587,6 @@ def run_pipeline(
                     deferred_receipt_stages.append((i, stage_exp_dir))
             print("=" * 60)
 
-            lifecycle.before_stage(stage_exp_dir, exp_config)
-
-            needs_kb_barrier = i + 1 < len(config.stages) and config.stages[i + 1].chain_kb
-            drain_baseline: object | None = None
-            if needs_kb_barrier:
-                drain_baseline = lifecycle.snapshot_before_drain(stage_exp_dir, exp_config)
-
             try:
                 returncode = _run_stage(
                     exp_config,
@@ -677,7 +612,6 @@ def run_pipeline(
                     # Same state an abort plus resume leaves: the next stage
                     # installs a fresh controller over the chained workspace.
                     _teardown_persistent_controllers(persistent_state, project_root, hook_env)
-                prev_kb_dir = str(stage_exp_dir / "kb")
                 print(f"\nStage {i} agent failure ({stage_state.error}); continuing the pipeline.\n")
                 continue
 
@@ -689,29 +623,9 @@ def run_pipeline(
                 print(f"Resume with: run_sregym.sh {pipeline_dir}")
                 return 1
 
-            if needs_kb_barrier:
-                print("  Waiting for KB review queue to drain before chaining...")
-                try:
-                    lifecycle.wait_for_drain(stage_exp_dir, drain_baseline)
-                except KeyboardInterrupt:
-                    print(f"\nInterrupted while waiting for KB queue after stage {i}. Saving state for resume.")
-                    stage_state.status = "failed"
-                    stage_state.error = "interrupted while waiting for kb queue"
-                    write_pipeline_state(state, pipeline_dir)
-                    print(f"Resume with: run_sregym.sh {pipeline_dir}")
-                    return 1
-                except Exception as exc:
-                    stage_state.status = "failed"
-                    stage_state.error = f"kb queue drain failed: {exc}"
-                    write_pipeline_state(state, pipeline_dir)
-                    print(f"\nStage {i} failed while waiting for KB queue: {exc}")
-                    print(f"Resume with: run_sregym.sh {pipeline_dir}")
-                    return 1
-
             stage_state.status = "completed"
             stage_state.error = ""
             write_pipeline_state(state, pipeline_dir)
-            prev_kb_dir = str(stage_exp_dir / "kb")
             print(f"\nStage {i} completed.\n")
 
         if deferred_receipt_stages or persistent_state.exists():

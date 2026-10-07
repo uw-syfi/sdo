@@ -254,7 +254,7 @@ def test_a_launched_pipeline_writes_a_manifest_into_the_pipeline_and_every_stage
     config = PipelineConfig(
         name="luna",
         defaults={"agent": "codex", "model": "gpt-6-luna", "reasoning_effort": "medium", "parallel": 1},
-        stages=[StageConfig(name="one", chain_kb=False), StageConfig(name="two", chain_kb=False)],
+        stages=[StageConfig(name="one"), StageConfig(name="two")],
     )
 
     def launched(argv: list[str], cwd: object = None, env: object = None) -> object:

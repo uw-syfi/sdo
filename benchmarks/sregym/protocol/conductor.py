@@ -259,7 +259,7 @@ CLEANUP_REQUEST_TIMEOUT_SECONDS: Final = 900
 def signal_cleanup(api_base: str) -> None:
     """Best-effort ``POST /cleanup`` — never raises.
 
-    Used by deferred-teardown agents (e.g. crucible) to release the
+    Used by deferred-teardown agents (e.g. sdo_codex) to release the
     conductor's teardown gate.  Cleanup failure must not mask the driver's
     real exit path.  The request waits out the synchronous teardown so a
     successful cleanup is not logged as a failure.

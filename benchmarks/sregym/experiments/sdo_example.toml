@@ -56,7 +56,6 @@ credentials_secret = "sdo-agent-credentials"
 
 [[stages]]
 name = "first-incident"
-chain_kb = false
 chain_application_workspace = false
 
 [stages.runner]
@@ -64,7 +63,6 @@ problems = ["missing_configmap_hotel_reservation"]
 
 [[stages]]
 name = "reused-incident"
-chain_kb = false
 chain_application_workspace = true
 
 [stages.runner]

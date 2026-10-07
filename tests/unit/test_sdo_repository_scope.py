@@ -101,12 +101,12 @@ def test_sregym_owned_code_has_one_explicit_benchmark_boundary() -> None:
         "benchmarks/sregym/adapter",
         "benchmarks/sregym/analysis",
         "benchmarks/sregym/experiments",
-        "benchmarks/sregym/agents/crucible",
         "benchmarks/sregym/protocol",
         "benchmarks/sregym/runner",
     )
 
     assert all((REPOSITORY_ROOT / path).is_dir() for path in required)
+    assert not (REPOSITORY_ROOT / "benchmarks/sregym/agents").exists()
     assert not (REPOSITORY_ROOT / "sregym_agents").exists()
     assert not (REPOSITORY_ROOT / "libs/sregym_lib").exists()
     assert not (REPOSITORY_ROOT / "bench/sregym_analysis").exists()

@@ -4,7 +4,7 @@ Single public helper: :func:`submit_to_benchmark`, which speaks to the
 conductor's ``/submit`` MCP server over SSE, retries transient failures
 with exponential backoff, and returns a typed :class:`BenchmarkResult`.
 
-Kept agent-agnostic — crucible's judge agent is just one caller; any
+Kept agent-agnostic: any
 future agent that wants to submit programmatically (rather than via the
 CLI-level MCP tool wiring) can depend on this.
 """

@@ -11,7 +11,7 @@ from benchmarks.sregym.runner.experiment import ExperimentConfig, load_experimen
 from benchmarks.sregym.runner.pipeline import load_pipeline_config, merge_stage_config
 
 EXPERIMENTS = Path(__file__).resolve().parents[5] / "benchmarks" / "sregym" / "experiments"
-EXAMPLES = ("default.toml", "example_pipeline.toml", "sdo_example.toml", "codex_baseline_example.toml")
+EXAMPLES = ("sdo_example.toml", "codex_baseline_example.toml")
 MACHINE_SPECIFIC = re.compile(r"/mnt/|/home/|/Users/|\.internal\b|\.cs\.[a-z]+\.edu")
 
 

@@ -353,7 +353,6 @@ def render_sdo_pipeline_toml(incidents: list[StreamIncident], *, name: str, seed
             f"""
 [[stages]]
 name = "i{incident.index + 1:02d}-{incident.kind}-{incident.problem_id.replace("_", "-")}"
-chain_kb = false
 chain_application_workspace = {chained}
 
 [stages.runner]
@@ -381,8 +380,6 @@ parallel = 1
 agent_timeout = 3600
 app_filter = "hotel_reservation"
 deploy_from_source = true
-enable_summary = false
-no_inject_summary = true
 problems = [
 {problems}
 ]

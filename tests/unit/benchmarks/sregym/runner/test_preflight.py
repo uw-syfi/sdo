@@ -308,7 +308,7 @@ def test_a_matching_stable_kubeconfig_passes(fake_host: FakeHost, sregym_dir: Pa
         (_luna(env=RunnerEnv(judge_model_id="codex-gpt-6-astra")), "judge is 'codex-gpt-6-astra'"),
         (_luna("codex", model="gpt-5.4"), "runner.model is 'gpt-5.4'"),
         (_luna("codex", reasoning_effort="high"), "reasoning_effort is 'high'"),
-        (_luna("crucible", model="gpt-6-luna"), "agent 'crucible' is outside"),
+        (_luna("legacy_agent", model="gpt-6-luna"), "agent 'legacy_agent' is outside"),
     ],
 )
 def test_any_role_or_judge_off_the_luna_policy_aborts(

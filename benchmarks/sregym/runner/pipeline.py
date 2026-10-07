@@ -26,7 +26,6 @@ except ModuleNotFoundError:
 from benchmarks.sregym.runner.experiment import (
     ExperimentConfig,
     RunnerEnv,
-    promote_crucible_legacy_config,
     variant_config_from_raw,
 )
 
@@ -40,7 +39,6 @@ class StageConfig:
     """One stage in a pipeline."""
 
     name: str = ""
-    chain_kb: bool = True
     chain_application_workspace: bool = False
     runner_overrides: dict[str, Any] = dataclasses.field(default_factory=dict)  # pyright: ignore[reportUnknownVariableType]
 
@@ -123,7 +121,6 @@ def load_pipeline_config(path: Path) -> PipelineConfig:
     for s in stages_raw:
         s = dict(s)  # copy so we can pop
         name = s.pop("name", "")
-        chain_kb = s.pop("chain_kb", True)
         chain_application_workspace = s.pop("chain_application_workspace", False)
         runner_overrides = s.pop("runner", {})
         # Anything remaining under the stage entry (e.g. agent_config)
@@ -133,7 +130,6 @@ def load_pipeline_config(path: Path) -> PipelineConfig:
         stages.append(
             StageConfig(
                 name=name,
-                chain_kb=chain_kb,
                 chain_application_workspace=chain_application_workspace,
                 runner_overrides=runner_overrides,
             )
@@ -202,16 +198,7 @@ def merge_stage_config(
     variants_raw = merged.pop("variants", {})
     env_raw = merged.pop("env", {})
     agent_config = merged.pop("agent_config", {})
-    agent = merged.get("agent", "crucible")
-    enable_summary = merged.get("enable_summary", True)
-    no_inject_summary = merged.get("no_inject_summary", True)
-    agent_config = promote_crucible_legacy_config(
-        agent=agent,
-        agent_config=agent_config,
-        enable_summary=enable_summary,
-        no_inject_summary=no_inject_summary,
-        crucible_seed_kb_dir=str(env_raw.get("crucible_seed_kb_dir", "")),
-    )
+    agent = merged.get("agent", "sdo_codex")
 
     variants = variant_config_from_raw(variants_raw)
 
@@ -223,8 +210,6 @@ def merge_stage_config(
         app_filter=merged.get("app_filter", ""),
         deploy_from_source=merged.get("deploy_from_source", False),
         application_workspace=merged.get("application_workspace", False),
-        enable_summary=enable_summary,
-        no_inject_summary=no_inject_summary,
         repeat=merged.get("repeat", 1),
         sequence_len=merged.get("sequence_len", 0),
         sequence_seed=merged.get("sequence_seed", 42),
@@ -237,7 +222,6 @@ def merge_stage_config(
         variants=variants,
         env=RunnerEnv(
             judge_model_id=env_raw.get("judge_model_id", ""),
-            crucible_seed_kb_dir=env_raw.get("crucible_seed_kb_dir", ""),
             worker_cpu_limit=str(env_raw.get("worker_cpu_limit", "")),
             reuse_cluster=bool(env_raw.get("reuse_cluster", False)),
             force_recreate_cluster=bool(env_raw.get("force_recreate_cluster", False)),
@@ -338,7 +322,7 @@ def reset_stages_for_rerun(
 
     Renames existing stage directories with a timestamp suffix and sets
     their status back to ``"pending"``.  Stages after *from_stage* that
-    have ``chain_kb=false`` are left as-is (they are independent).
+    that do not chain are left as-is (they are independent).
 
     Returns the updated pipeline state.
     """
@@ -352,10 +336,10 @@ def reset_stages_for_rerun(
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # Determine which stages to reset: from_stage itself, plus any
-    # subsequent stages that transitively chain via chain_kb=true.
+    # subsequent stages that transitively chain.
     to_reset = {from_stage}
     for i in range(from_stage + 1, len(config.stages)):
-        if config.stages[i].chain_kb or config.stages[i].chain_application_workspace:
+        if config.stages[i].chain_application_workspace:
             to_reset.add(i)
         else:
             # Independent stage — stop the chain propagation.
@@ -437,7 +421,6 @@ def _serialize_pipeline_config(config: PipelineConfig) -> str:
         lines.append("[[stages]]")
         if stage.name:
             lines.append(f"name = {_toml_value(stage.name)}")
-        lines.append(f"chain_kb = {_toml_value(stage.chain_kb)}")
         lines.append(f"chain_application_workspace = {_toml_value(stage.chain_application_workspace)}")
         if stage.runner_overrides:
             lines.append("")

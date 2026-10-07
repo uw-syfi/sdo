@@ -238,7 +238,7 @@ def test_a_switch_left_in_the_shell_never_enables_exec_for_an_arm_that_did_not_a
 ) -> None:
     monkeypatch.setenv(ALLOW_EXEC_ENV, "1")
     assert ALLOW_EXEC_ENV not in config_to_env(_codex({"codex": {"verify_protocol": "concise"}}), tmp_path)
-    assert ALLOW_EXEC_ENV not in config_to_env(ExperimentConfig(agent="crucible", model="m"), tmp_path)
+    assert ALLOW_EXEC_ENV not in config_to_env(ExperimentConfig(agent="sdo_codex", model="m"), tmp_path)
 
 
 def test_allow_exec_rejects_a_non_boolean() -> None:
