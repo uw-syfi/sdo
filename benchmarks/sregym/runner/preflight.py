@@ -5,7 +5,7 @@ aborts with an actionable error before any directory, cluster or agent is
 touched:
 
 - ``disk``: at least 100 GB free on the logs disk and on Docker's data disk
-  (a full ``/mnt/data`` once crashed MongoDB pods mid-run);
+  (a full data disk once crashed MongoDB pods mid-run);
 - ``codex-cli-pins``: one concrete Codex CLI version everywhere. The stock
   Codex arm's ``agents.yaml`` pin, the host CLI (which runs the judge) and the
   SDO image build argument must agree, and the pin must resolve on npm with

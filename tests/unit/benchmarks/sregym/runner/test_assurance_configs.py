@@ -152,7 +152,7 @@ def test_each_sdo_pipeline_keeps_going_past_a_failed_incident_and_censors_undete
 #: ("sdo: capture goal, architecture, and independent health judge"), produced 2026-09-28 by an
 #: unseeded single-stage run of missing_configmap_hotel_reservation on private (:seed-fresh)
 #: images and kind cluster assure-seed0. Replaces the benchmark-tailored ``30e023d`` seed.
-FRESH_LIFECYCLE_SEED = "/path/to/assure-runs/seed-dd6bc81"
+FRESH_LIFECYCLE_SEED_NAME = "seed-dd6bc81"
 
 
 @pytest.mark.parametrize("name", sorted(SDO))
@@ -164,7 +164,7 @@ def test_each_sdo_pipeline_waits_for_a_fresh_lifecycle_seed(name: str) -> None:
     """
     config = load_pipeline_config(PHASE1 / name)
 
-    assert config.workspace_seed == FRESH_LIFECYCLE_SEED
+    assert config.workspace_seed.rstrip("/").endswith("/" + FRESH_LIFECYCLE_SEED_NAME)
     assert "30e023d" not in (PHASE1 / name).read_text(encoding="utf-8")
 
 
