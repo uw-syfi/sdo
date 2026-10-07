@@ -2,6 +2,7 @@
 name = "sdo-agent-cli"
 version = "0.1.0"
 description = "AI provider CLI integrations for SDO agents"
+license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
     "agentshim>=0.7.0,<0.8",

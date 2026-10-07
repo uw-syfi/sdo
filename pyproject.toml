@@ -3,6 +3,7 @@ name = "sdo-operator"
 version = "0.1.0"
 description = "Self-Defining Operator for autonomous Kubernetes operation"
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
     "sdo-agent-cli",

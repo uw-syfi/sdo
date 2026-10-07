@@ -107,3 +107,7 @@ The repository intentionally retains:
 - tests, build definitions, and documentation required by those components.
 
 Old bounded deploy-and-monitor operators, generated shell health checks, standalone fault-injection tooling, and historical trajectory formats are outside the paper design and are not part of the supported system.
+
+## License
+
+SDO is released under the [MIT License](LICENSE).
