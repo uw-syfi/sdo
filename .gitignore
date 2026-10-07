@@ -96,5 +96,3 @@ exp_config/*/*.log
 # tach cache
 .tach/
 
-# phase-1 assurance launcher state (resumable run state, host/quota logs)
-.launch/

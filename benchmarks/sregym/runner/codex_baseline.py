@@ -68,7 +68,7 @@ gone.
 #: Environment disclosure (``exec_disclosure = true``), kept separate from the
 #: verify text. It states that exec/attach/port-forward are unavailable, so it is
 #: only true when ``allow_exec`` is off; exec parity
-#: gives both arms exec, so phase 1 leaves it off. It names no fault, resource or decoy.
+#: gives both arms exec, so it is off by default. It names no fault, resource or decoy.
 EXEC_DISCLOSURE_PROMPT = """\
 ENVIRONMENT: `kubectl exec`, `kubectl attach`, `kubectl port-forward` and `kubectl cp` are unavailable in this \
 environment. Inspect state through the Kubernetes API, logs, and HTTP requests from a helper pod.
@@ -89,11 +89,11 @@ class CodexBaselineConfig:
     """``[agent.codex]`` settings of an experiment config."""
 
     verify_protocol: VerifyProtocolMode = "concise"
-    #: Append :data:`EXEC_DISCLOSURE_PROMPT` (off by default; phase-1 configs turn it on).
+    #: Append :data:`EXEC_DISCLOSURE_PROMPT` (off by default; turn it on per config).
     exec_disclosure: bool = False
     #: Let the Codex agent's kubectl exec/attach/port-forward through SREGym's agent proxy,
     #: matching SDO's responder Role (exec parity). Scoped by the proxy to the problem's
-    #: app namespaces. Off by default; every phase-1 Codex config turns it on.
+    #: app namespaces. Off by default; turn it on per config.
     allow_exec: bool = False
 
     def __post_init__(self) -> None:
