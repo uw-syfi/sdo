@@ -25,7 +25,7 @@ For SDO adapter runs, prioritize:
 4. controller/responder Kubernetes logs or copied logs;
 5. benchmark result CSVs and harness logs.
 
-Agent-specific trajectories may exist for Crucible or generic CLI benchmark agents. Treat them as explanatory evidence, not the authoritative SDO record.
+Agent-specific trajectories may exist for generic CLI benchmark agents. Treat them as explanatory evidence, not the authoritative SDO record.
 
 ## Workflow
 

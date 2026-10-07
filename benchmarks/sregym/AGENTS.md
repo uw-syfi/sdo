@@ -7,9 +7,8 @@ All first-party SREGym integration code lives here. This package may depend on p
 - `adapter/` — translates SREGym execution into production SDO lifecycle/controller/responder APIs and persists benchmark transport evidence
 - `protocol/` — benchmark conductor, HTTP, MCP submission, and strict-receipt evidence contracts
 - `runner/` — experiment and pipeline configuration plus harness process orchestration
-- `experiments/` — a few example configs (`default.toml`, `example_pipeline.toml`, `sdo_example.toml`, `codex_baseline_example.toml`; copy and edit for your own runs) plus the assurance catalog and seeds (`assurance/composites.toml`, `assurance/seeds/`) that code reads at runtime. Incident-stream configs are generated with `uv run python -m benchmarks.sregym.runner.incident_stream --out-dir <dir>`, not checked in
+- `experiments/` — a few example configs (`sdo_example.toml`, `codex_baseline_example.toml`; copy and edit for your own runs) plus the assurance catalog and seeds (`assurance/composites.toml`, `assurance/seeds/`) that code reads at runtime. Incident-stream configs are generated with `uv run python -m benchmarks.sregym.runner.incident_stream --out-dir <dir>`, not checked in
 - `analysis/` — benchmark result summarization
-- `agents/` — benchmark competitors that are not production SDO components
 - `registry.yaml` — agent registry consumed by the benchmark runner
 - `run.py` — benchmark experiment entry point
 
@@ -18,9 +17,7 @@ The external SREGym implementation is a separately pinned Git submodule at `thir
 ## Participants
 
 - **sdo_codex** — the adapter-backed benchmark entry for the production SDO design
-- **crucible** — `uv run python -m benchmarks.sregym.agents.crucible.driver`; a legacy benchmark agent retained for historical comparisons
-
-Crucible's orchestrator, judge, benchmark-oracle recovery, and private knowledge-base formats are benchmark agent logic. They must not be imported by production SDO code or treated as the implementation of SDO's responder and repository-backed operational memory.
+- **codex** — the memoryless stock Codex baseline, with its CLI version pinned in `registry.yaml`
 
 ## Boundary rules
 

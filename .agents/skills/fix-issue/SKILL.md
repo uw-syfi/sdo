@@ -23,7 +23,7 @@ Read the title, problem description, and any linked files/lines to understand sc
 
 ### 2. Create a worktree
 
-Infer a concise branch slug from the issue title (e.g. `crucible-backoff` from "no exponential backoff in crucible driver").
+Infer a concise branch slug from the issue title (e.g. `controller-backoff` from "no exponential backoff in the controller loop").
 
 Use `EnterWorktree` with name `<developer>/fix/<slug>`. Developer name: see the `git-branch` skill (derived from `git config user.name`).
 

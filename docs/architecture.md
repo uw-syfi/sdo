@@ -40,7 +40,7 @@ operational-memory boundary, message contracts, and installation of the separate
 | `sdo/contracts/` | Typed findings, detector evaluations, and controller-to-responder incident contracts |
 | `sdo/agent_runtime/responder/` | Incident response sessions, broker integration, credentials, and outcome-driven reflection |
 | `sdo/controller_install/` | Kubernetes resources, repository synchronization, controller installation, and optional transport extensions |
-| `benchmarks/sregym/` | First-party benchmark boundary: adapter, protocol, runner, experiments, analysis, and legacy agents |
+| `benchmarks/sregym/` | First-party benchmark boundary: adapter, protocol, runner, experiments, and analysis |
 | `third_party/sregym/` | External SREGym harness, retained as a Git submodule outside first-party package namespaces |
 
 Production packages may not import `benchmarks.sregym` or code from the external harness. The dependency direction is from benchmark adapters to production APIs. Reusable lifecycle, incident-response, contracts, and operational-memory behavior belongs under `sdo/`, not under the benchmark namespace.
@@ -54,9 +54,8 @@ The first-party SREGym tree is divided by responsibility:
 | `benchmarks/sregym/runner/` | Experiment and pipeline configuration, lifecycle chaining, and harness process orchestration |
 | `benchmarks/sregym/experiments/` | Example experiment configs and the assurance catalog and seeds read by the benchmark code |
 | `benchmarks/sregym/analysis/` | Benchmark-result summarization utilities |
-| `benchmarks/sregym/agents/` | Benchmark competitors that are not production SDO components |
 
-`benchmarks/sregym/agents/crucible/` is the legacy Crucible competitor. Its judge loop, benchmark-oracle recovery, and private knowledge-base formats are useful only for historical benchmark comparisons; they do not define the SDO responder or `.sdo/` operational memory. The external harness itself remains pinned separately under `third_party/sregym/`.
+The external harness itself remains pinned separately under `third_party/sregym/`.
 
 ## Controller
 
@@ -147,8 +146,7 @@ The installation code provides manifests and orchestration logic; the always-run
 ## Shared libraries
 
 - `libs/agent_cli/structured.py` runs every production agent turn through [agentshim](https://github.com/vic-lsh/agentshim). SDO's deployer, health judge, responder, and reflection backends name a provider (Codex or Claude Code) and an access level, and keep their subsystem-owned prompts and Pydantic validation. The access levels map onto each provider's own confinement: `read-only` is Codex's read-only sandbox, or Claude's settings sandbox denying workspace writes plus the Edit/Write tools; `workspace-write` is Codex's workspace-write sandbox (network off) with `sdo detector check` exempted by an exec-policy `allow` rule, or Claude's sandbox with `sdo detector check` excluded and a `PreToolUse` hook refusing direct `go`. Codex reads that rule only from `$CODEX_HOME/rules`, so each Codex workspace-write turn runs with a private, non-resumable `CODEX_HOME` under `$SDO_CODEX_HOME_ROOT` (default `~/.cache/sdo/codex-homes`, outside the workspace and `/tmp`) holding the rule and a 0600 copy of the user's `auth.json` (or none when `CODEX_API_KEY`/`OPENAI_API_KEY` is set), deleted when the turn ends; `danger-full-access` removes confinement for sessions that operate the cluster. Each turn also returns the shell commands the agent started, which the lifecycle audits for reads outside the application checkout; Codex omits commands its sandbox denied from that stream, which the audit tolerates because denied commands never ran. Responder and broker share only the selected provider's session directory so verified reflection can resume the exact incident session.
-- The rest of `libs/agent_cli/` (the `CLICodingAgent` family) serves only the legacy Crucible benchmark agent.
-- `libs/model_config/`, `libs/agent_mw/`, and `libs/pydantic_agent/` support legacy benchmark agents where configured.
+- `libs/model_config/` holds provider and model-name parsing shared by production and benchmark code.
 - `libs/sdo_core/` contains neutral command, filesystem, and tool helpers.
 - SREGym-specific protocols and runner utilities live under `benchmarks/sregym/`, not `libs/`.
 
@@ -209,11 +207,10 @@ Status meanings:
 | `sdo/agent_runtime`, `sdo/operational_memory`, `sdo/contracts`, `sdo/controller_install` | Production SDO Python runtime |
 | `controller/sdk`, `core`, `runtime`, `builder` | Production SDO |
 | `libs/sdo_core` | Retained production-neutral support |
-| `libs/agent_cli` | Production coding-agent CLI adapter, also reused by SREGym |
-| `libs/model_config`, `libs/agent_mw`, `libs/pydantic_agent` | Retained agent support used by SREGym |
+| `libs/agent_cli` | Production agentshim turn runner |
+| `libs/model_config` | Shared model-name parsing |
 | `apps/` | Deployment/evaluation inputs |
 | `benchmarks/sregym/adapter`, `protocol`, `runner`, `experiments`, `analysis` | Retained first-party benchmark integration |
-| `benchmarks/sregym/agents/crucible` | Retained legacy benchmark agent; not production SDO agent logic or operational memory |
 | `third_party/sregym` | Retained external SREGym harness Git submodule |
 | Historical bounded operator, shell health checks, trajectory recorder, UI, prompt stack, standalone fault injection | Excluded; outside the production design |
 | Legacy Python and controller package names | Removed after moving retained implementation to the canonical SDO paths |
