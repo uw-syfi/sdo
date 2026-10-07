@@ -33,8 +33,8 @@ records the preflight as waived, and the validity checker counts such a run as
 Compare arms before launching them::
 
     uv run python -m benchmarks.sregym.runner.preflight \\
-        benchmarks/sregym/experiments/sdo_codex_luna_persistent.toml \\
-        benchmarks/sregym/experiments/codex_luna_baseline_x5.toml
+        benchmarks/sregym/experiments/sdo_example.toml \\
+        benchmarks/sregym/experiments/codex_baseline_example.toml
 """
 
 from __future__ import annotations

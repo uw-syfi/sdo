@@ -11,6 +11,10 @@ Usage:
     # New pipeline (auto-detected by [[stages]] in TOML):
     uv run python -m benchmarks.sregym.run benchmarks/sregym/experiments/example_pipeline.toml
 
+    # New SDO experiment and its memoryless Codex baseline (see the example configs):
+    uv run python -m benchmarks.sregym.run benchmarks/sregym/experiments/sdo_example.toml
+    uv run python -m benchmarks.sregym.run benchmarks/sregym/experiments/codex_baseline_example.toml
+
     # Resume experiment or pipeline:
     uv run python -m benchmarks.sregym.run third_party/sregym/logs/<exp_or_pipeline_dir>/
 

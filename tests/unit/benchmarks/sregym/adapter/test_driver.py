@@ -39,7 +39,6 @@ from benchmarks.sregym.adapter.runtime import (
 )
 from benchmarks.sregym.protocol import receipt_resolution
 from benchmarks.sregym.runner.experiment import ExperimentConfig, config_to_env
-from benchmarks.sregym.runner.pipeline import load_pipeline_config, merge_stage_config
 from sdo.controller_install.kubernetes import (
     ControllerInstallError,
     _controller_job_logs,
@@ -1208,26 +1207,6 @@ def test_sdo_codex_is_an_external_deferred_cleanup_agent(tmp_path: Path) -> None
     assert entry["kickoff_command"] == "uv run python -m benchmarks.sregym.adapter.driver"
     env = config_to_env(ExperimentConfig(agent="sdo_codex"), project_root=tmp_path)
     assert env["SREGYM_AGENT_REGISTRY"] == str(tmp_path / "benchmarks" / "sregym" / "registry.yaml")
-
-
-def test_four_problem_pipeline_is_source_backed_and_chains_one_hotel_workspace() -> None:
-    root = Path(__file__).resolve().parents[5]
-    config = load_pipeline_config(root / "benchmarks" / "sregym" / "experiments" / "sdo_codex_four_e2e.toml")
-    expected = [
-        "readiness_probe_misconfiguration_hotel_reservation",
-        "missing_configmap_hotel_reservation",
-        "wrong_service_selector_hotel_reservation",
-        "network_policy_block",
-    ]
-
-    resolved = [merge_stage_config(config.defaults, stage.runner_overrides) for stage in config.stages]
-    assert [stage.problems[0] for stage in resolved] == expected
-    assert all(stage.agent == "sdo_codex" for stage in resolved)
-    assert all(stage.app_filter == "hotel_reservation" for stage in resolved)
-    assert all(stage.deploy_from_source for stage in resolved)
-    assert all(stage.application_workspace == "persistent" for stage in resolved)
-    assert all(stage.require_strict_receipt for stage in resolved)
-    assert [stage.chain_application_workspace for stage in config.stages] == [False, True, True, True]
 
 
 def test_runner_honors_temporary_sregym_checkout(monkeypatch, tmp_path: Path) -> None:

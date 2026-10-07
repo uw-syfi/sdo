@@ -404,10 +404,7 @@ def test_settings_reject_nonsense() -> None:
 
 
 LUNA_COMPARISONS = [
-    ("sdo_codex_luna_persistent.toml", "codex_luna_baseline_x5.toml"),
-    ("sdo_codex_luna_sequence.toml", "codex_luna_sequence_baseline.toml", "codex_luna_verify_sequence_baseline.toml"),
-    ("sdo_codex_luna_variants.toml", "codex_luna_variants_baseline.toml"),
-    ("sdo_codex_luna_reuse.toml", "codex_luna_baseline.toml", "codex_luna_verify_baseline.toml"),
+    ("sdo_example.toml", "codex_baseline_example.toml"),
 ]
 
 
@@ -428,7 +425,7 @@ def test_the_committed_stock_codex_pin_matches_the_image_pin() -> None:
     codex = next(entry for entry in agents["agents"] if entry["name"] == "codex")
 
     assert codex["agent_version"] == CODEX_PIN
-    assert load_experiment_config(EXPERIMENTS / "codex_luna_baseline.toml").agent == "codex"
+    assert load_experiment_config(EXPERIMENTS / "codex_baseline_example.toml").agent == "codex"
 
 
 def test_system_host_parses_codex_versions_behind_warnings() -> None:

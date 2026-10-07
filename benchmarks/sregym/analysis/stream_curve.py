@@ -2,7 +2,8 @@
 
 Reads an SDO persistent-controller pipeline directory and one or more plain
 Codex experiment directories that replayed the same stream, joins both to the
-stream manifest (``stream_learning_curve_manifest.json``), and writes per-incident
+stream manifest (``stream_learning_curve_manifest.json``, written by
+``benchmarks.sregym.runner.incident_stream --out-dir <dir>``), and writes per-incident
 rows, rolling averages, numbers split by incident type, SDO memory growth and a
 timeline plot. Timing and token accounting reuse :mod:`incident_cost`: TTM is the
 judge-free headline, TTD sits beside it, and a failed incident is reported as
@@ -11,7 +12,7 @@ judge-free headline, TTD sits beside it, and a failed incident is reported as
 Usage::
 
     uv run --with matplotlib python -m benchmarks.sregym.analysis.stream_curve \\
-        --manifest benchmarks/sregym/experiments/stream_learning_curve_manifest.json \\
+        --manifest <stream-dir>/stream_learning_curve_manifest.json \\
         --sdo third_party/sregym/logs/<pipeline> --codex <dir1> <dir2> --out <out-dir>
 """
 

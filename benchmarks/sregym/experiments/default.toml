@@ -54,8 +54,8 @@ spec_names = ["service_dns_resolution_failure"]
 
 [runner.env]
 judge_model_id = "codex-gpt-6-luna"  # Codex CLI judge; reasoning effort defaults to xhigh
-#crucible_seed_kb_dir = "/path/to/sdo/third_party/sregym/logs/20260331_012038_crucible_no_kb/kb"
-# crucible_seed_kb_dir = "/path/to/sdo/third_party/sregym/logs/20260406_233420_crucible/kb"
+# Seed the agent's KB from a previous run's kb/ directory (relative or absolute path):
+# crucible_seed_kb_dir = "third_party/sregym/logs/<exp-dir>/kb"
 crucible_seed_kb_dir = ""
 worker_cpu_limit = "16"
 
