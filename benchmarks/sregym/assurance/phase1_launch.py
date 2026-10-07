@@ -1,7 +1,7 @@
 """Launch the phase-1 live assurance matrix (the assurance plan (d), (e)).
 
 One command starts the eight phase-1 lanes (``assure-w0``..``assure-w7``),
-each bound to its config in ``experiments/assurance/phase1/`` by the lane the
+each bound to its config in the ``--phase1-dir`` directory by the lane the
 config's own header names (the assurance plan D11). Before anything starts:
 
 - every lane's cluster is verified (never created here: SREGym's own harness
@@ -739,7 +739,9 @@ def run_matrix(
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Launch the SREGym assurance phase-1 live matrix.")
-    parser.add_argument("--phase1-dir", type=Path, default=None, help="defaults to this repo's phase1 experiments dir")
+    parser.add_argument(
+        "--phase1-dir", type=Path, required=True, help="directory holding the per-lane phase-1 experiment configs"
+    )
     parser.add_argument("--launch-dir", type=Path, default=None, help="defaults to <phase1-dir>/.launch")
     parser.add_argument("--dry-run", action="store_true", help="stub cluster, quota and process calls; touch nothing")
     parser.add_argument("--stagger-seconds", type=float, default=120.0)
@@ -806,7 +808,7 @@ def _dry_run_preflight_runner(binding: LaneBinding) -> PreflightReport:
 def main(argv: Sequence[str] | None = None) -> int:
     args = _build_arg_parser().parse_args(argv)
     project_root = Path(__file__).resolve().parents[3]
-    phase1_dir = args.phase1_dir or project_root / "benchmarks" / "sregym" / "experiments" / "assurance" / "phase1"
+    phase1_dir = args.phase1_dir
     launch_dir = args.launch_dir or phase1_dir / ".launch"
     sregym_dir = Path(os.environ.get("SDO_SREGYM_DIR", project_root / "third_party" / "sregym")).resolve()
 

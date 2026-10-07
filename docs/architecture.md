@@ -52,7 +52,7 @@ The first-party SREGym tree is divided by responsibility:
 | `benchmarks/sregym/adapter/` | Translate SREGym execution into production SDO lifecycle/controller/responder APIs; derive and persist submission relays (refusing a mitigation submission with exit 4 while `sdo incident status` is unhealthy) and strict receipts (including `diagnosis_verification`) |
 | `benchmarks/sregym/protocol/` | Benchmark-only conductor, HTTP, MCP submission, and strict-receipt evidence contracts |
 | `benchmarks/sregym/runner/` | Experiment and pipeline configuration, lifecycle chaining, and harness process orchestration |
-| `benchmarks/sregym/experiments/` | Checked-in benchmark and end-to-end experiment definitions |
+| `benchmarks/sregym/experiments/` | Example experiment configs and the assurance catalog and seeds read by the benchmark code |
 | `benchmarks/sregym/analysis/` | Benchmark-result summarization utilities |
 | `benchmarks/sregym/agents/` | Benchmark competitors that are not production SDO components |
 

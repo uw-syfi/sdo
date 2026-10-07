@@ -308,9 +308,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     project_root = Path(__file__).resolve().parents[3]
-    out = args.out or project_root / "benchmarks" / "sregym" / "experiments" / "assurance" / "phase1" / ".launch" / (
-        "v010_digests.json"
-    )
+    out = args.out or project_root / ".launch" / "v010_digests.json"
 
     try:
         result = rebuild_v010_images(

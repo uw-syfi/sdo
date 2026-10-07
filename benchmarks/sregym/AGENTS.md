@@ -7,7 +7,7 @@ All first-party SREGym integration code lives here. This package may depend on p
 - `adapter/` — translates SREGym execution into production SDO lifecycle/controller/responder APIs and persists benchmark transport evidence
 - `protocol/` — benchmark conductor, HTTP, MCP submission, and strict-receipt evidence contracts
 - `runner/` — experiment and pipeline configuration plus harness process orchestration
-- `experiments/` — checked-in benchmark configurations
+- `experiments/` — a few example configs (`default.toml`, `example_pipeline.toml`, `sdo_example.toml`, `codex_baseline_example.toml`; copy and edit for your own runs) plus the assurance catalog and seeds (`assurance/composites.toml`, `assurance/seeds/`) that code reads at runtime. Incident-stream configs are generated with `uv run python -m benchmarks.sregym.runner.incident_stream --out-dir <dir>`, not checked in
 - `analysis/` — benchmark result summarization
 - `agents/` — benchmark competitors that are not production SDO components
 - `registry.yaml` — agent registry consumed by the benchmark runner

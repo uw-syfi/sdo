@@ -20,10 +20,16 @@ Incident kinds:
     parameters (another service or ConfigMap), never seen before.
 
 Every repeat and variant follows the first occurrence of its family.
+
+The stream configs and manifest are generated output, not checked in. Write them
+to a directory of your choice::
+
+    uv run python -m benchmarks.sregym.runner.incident_stream --out-dir <dir>
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import random
 from dataclasses import dataclass
@@ -401,7 +407,7 @@ def render_baseline_toml(incidents: list[StreamIncident], *, label: str = "", se
 
 
 def write_configs(directory: Path, *, seed: int = STREAM_SEED, length: int = STREAM_LENGTH) -> list[Path]:
-    """Write the committed stream configs and manifest into ``directory``."""
+    """Write the stream configs and manifest into ``directory`` (created if missing)."""
 
     stream = generate_stream(seed, length, opening=STREAM_OPENING)
     pilot, rest = stream[:PILOT_LENGTH], stream[PILOT_LENGTH:]
@@ -417,6 +423,7 @@ def write_configs(directory: Path, *, seed: int = STREAM_SEED, length: int = STR
         "codex_luna_stream_baseline_9_24.toml": render_baseline_toml(rest, label="incidents 9-24", seed=seed),
         "stream_learning_curve_manifest.json": render_manifest(stream, seed),
     }
+    directory.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
     for name, text in files.items():
         path = directory / name
@@ -425,6 +432,16 @@ def write_configs(directory: Path, *, seed: int = STREAM_SEED, length: int = STR
     return written
 
 
-if __name__ == "__main__":
-    for written_path in write_configs(Path(__file__).resolve().parents[1] / "experiments"):
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Generate the incident-stream experiment configs and manifest.")
+    parser.add_argument("--out-dir", type=Path, required=True, help="directory to write the generated files into")
+    parser.add_argument("--seed", type=int, default=STREAM_SEED)
+    parser.add_argument("--length", type=int, default=STREAM_LENGTH)
+    args = parser.parse_args(argv)
+    for written_path in write_configs(args.out_dir, seed=args.seed, length=args.length):
         print(written_path)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

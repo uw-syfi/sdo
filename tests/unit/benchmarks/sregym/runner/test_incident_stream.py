@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 import tomllib
@@ -20,9 +20,13 @@ from benchmarks.sregym.runner.incident_stream import (
     render_baseline_toml,
     render_manifest,
     render_sdo_pipeline_toml,
+    write_configs,
 )
+from benchmarks.sregym.runner.incident_stream import main as incident_stream_main
 
-EXPERIMENTS = Path(__file__).resolve().parents[5] / "benchmarks" / "sregym" / "experiments"
+if TYPE_CHECKING:
+    from pathlib import Path
+
 PILOT = 8
 
 
@@ -120,35 +124,30 @@ def test_the_baseline_lists_the_identical_problems_in_order() -> None:
     assert document["runner"]["agent"] == "codex"
 
 
-COMMITTED = {
-    "sdo_codex_luna_stream.toml": (render_sdo_pipeline_toml, STREAM_LENGTH),
-    "sdo_codex_luna_stream_pilot.toml": (render_sdo_pipeline_toml, PILOT),
-}
+def test_write_configs_emits_parseable_stream_configs_and_a_matching_manifest(tmp_path: Path) -> None:
+    out = tmp_path / "generated"
+    written = {path.name: path for path in write_configs(out)}
 
-
-@pytest.mark.parametrize("name", sorted(COMMITTED))
-def test_committed_sdo_stream_configs_match_the_generator(name: str) -> None:
-    render, count = COMMITTED[name]
-    expected = render(
-        generate_stream(STREAM_SEED, STREAM_LENGTH, opening=STREAM_OPENING)[:count], name=name.removesuffix(".toml")
-    )
-    assert (EXPERIMENTS / name).read_text(encoding="utf-8") == expected
-
-
-def test_committed_baseline_stream_configs_match_the_generator() -> None:
+    assert set(written) == {
+        "sdo_codex_luna_stream.toml",
+        "sdo_codex_luna_stream_pilot.toml",
+        "codex_luna_stream_baseline_1_8.toml",
+        "codex_luna_stream_baseline_5_8.toml",
+        "codex_luna_stream_baseline_9_24.toml",
+        "stream_learning_curve_manifest.json",
+    }
     stream = _stream()
-    assert (EXPERIMENTS / "codex_luna_stream_baseline_1_8.toml").read_text(encoding="utf-8") == render_baseline_toml(
-        stream[:PILOT], label="incidents 1-8"
-    )
-    assert (EXPERIMENTS / "codex_luna_stream_baseline_5_8.toml").read_text(encoding="utf-8") == render_baseline_toml(
-        stream[4:PILOT], label="incidents 5-8"
-    )
-    assert (EXPERIMENTS / "codex_luna_stream_baseline_9_24.toml").read_text(encoding="utf-8") == render_baseline_toml(
-        stream[PILOT:], label="incidents 9-24"
-    )
+    assert tomllib.loads(written["sdo_codex_luna_stream.toml"].read_text(encoding="utf-8"))["stages"][0]["runner"][
+        "problems"
+    ] == [stream[0].problem_id]
+    assert tomllib.loads(written["codex_luna_stream_baseline_9_24.toml"].read_text(encoding="utf-8"))["runner"][
+        "problems"
+    ] == [i.problem_id for i in stream[PILOT:]]
+    assert written["stream_learning_curve_manifest.json"].read_text(encoding="utf-8") == render_manifest(stream)
 
 
-def test_committed_manifest_matches_the_generator() -> None:
-    assert (EXPERIMENTS / "stream_learning_curve_manifest.json").read_text(encoding="utf-8") == render_manifest(
-        _stream()
-    )
+def test_the_generator_cli_requires_an_output_directory_and_writes_there(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit):
+        incident_stream_main([])
+    assert incident_stream_main(["--out-dir", str(tmp_path / "out")]) == 0
+    assert (tmp_path / "out" / "stream_learning_curve_manifest.json").is_file()

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -18,6 +18,9 @@ from benchmarks.sregym.assurance.phase1_launch import (
     run_matrix,
 )
 from benchmarks.sregym.runner.preflight import MAX_QUOTA_USED_ENV, PreflightCheck, PreflightReport
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 PHASE1_HEADERS = {
     "sdo_codex_luna_assure_p1_a.toml": "assure-w0",
@@ -88,11 +91,6 @@ def test_bind_lanes_rejects_two_configs_claiming_the_same_lane(tmp_path: Path) -
     )
     with pytest.raises(ValueError, match="bound twice"):
         bind_lanes(phase1)
-
-
-def test_the_real_phase1_directory_binds_cleanly() -> None:
-    real = Path(__file__).resolve().parents[5] / "benchmarks" / "sregym" / "experiments" / "assurance" / "phase1"
-    assert len(bind_lanes(real)) == 8
 
 
 def test_interleaved_launch_order_round_robins_across_arms(tmp_path: Path) -> None:
