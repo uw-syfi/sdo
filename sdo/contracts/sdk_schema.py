@@ -17,5 +17,5 @@ stale validator.
 
 from __future__ import annotations
 
-SDK_SCHEMA_IDENTITY = "sdo.dev/v1alpha1+sdk.a24a1bfd980f6444"
+SDK_SCHEMA_IDENTITY = "sdo.dev/v1alpha1+sdk.496cc7d311c9b203"
 """Regenerate with ``controller.builder.schema.schema_identity()`` when the SDK schema changes."""
