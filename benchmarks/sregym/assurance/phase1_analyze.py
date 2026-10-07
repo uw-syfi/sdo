@@ -3,7 +3,7 @@
 Phase 1 has no stock (no-verify) Codex arm (user decision, 2026-09-28,
 the assurance plan decisions log): its sole Codex arm is the default, concise-verify
 baseline. Every claim below compares SDO against that one arm. Where the
-paper's own comparisons were against a stock baseline, the claim's summary
+original SDO evaluation compared against a stock baseline, the claim's summary
 notes that phase 1 has no stock arm to compare against.
 
 One command, after the matrix finishes:
@@ -82,11 +82,11 @@ COMPOSITE_PROBLEMS = (
 )
 
 #: User decision (2026-09-28, the assurance plan decisions log): phase 1 has no stock
-#: (no-verify) Codex arm. The paper's own C1-C4 and C8 comparisons were
+#: (no-verify) Codex arm. The original evaluation's C1-C4 and C8 comparisons were
 #: against a stock baseline; every claim here compares against the default,
 #: concise-verify arm instead, and says so.
 NO_STOCK_ARM_NOTE = (
-    "Phase 1 has no stock (no-verify) Codex arm to compare against for paper comparability: the default "
+    "Phase 1 has no stock (no-verify) Codex arm to compare against for comparability with the original evaluation: the default "
     "baseline verifies its own work, so this comparison already shows whether SDO's win reflects memory and "
     "learned detectors rather than a missing verification instruction."
 )
@@ -320,7 +320,7 @@ def compute_c2(sdo_pipelines: Sequence[Sequence[SdoStage]], codex_runs: Sequence
         return ClaimReport(
             "C2",
             "recurring faults use fewer weighted tokens than Codex (concise verify)",
-            "direction: ratio <= 0.8, upper bound < 1.0; paper magnitude: ratio <= 0.4",
+            "direction: ratio <= 0.8, upper bound < 1.0; target magnitude: ratio <= 0.4",
             "insufficient data",
             "insufficient_data",
             "Meaning: no problem has both a warm SDO token total and a Codex token total. Confidence: n/a. "
@@ -337,13 +337,13 @@ def compute_c2(sdo_pipelines: Sequence[Sequence[SdoStage]], codex_runs: Sequence
     verdict: ClaimVerdict = direction_ok
     summary = (
         f"pooled weighted-token ratio (SDO warm / Codex (concise verify)) = {result.point:.3f} "
-        f"(95% CI [{result.ci_low:.3f}, {result.ci_high:.3f}]); paper magnitude (<=0.4) "
+        f"(95% CI [{result.ci_low:.3f}, {result.ci_high:.3f}]); target magnitude (<=0.4) "
         f"{'met' if magnitude_pass else 'not met'}. {NO_STOCK_ARM_NOTE}"
     )
     return ClaimReport(
         "C2",
         "recurring faults use fewer weighted tokens than Codex (concise verify)",
-        "direction: ratio <= 0.8, upper bound < 1.0; paper magnitude: ratio <= 0.4 (expected to fail per Step 3)",
+        "direction: ratio <= 0.8, upper bound < 1.0; target magnitude: ratio <= 0.4 (expected to fail per Step 3)",
         summary,
         verdict,
         _takeaways_for_ratio(verdict, "SDO's warm repeats use fewer weighted tokens", "token"),
@@ -438,7 +438,7 @@ def compute_c4(sdo_stages: Sequence[SdoStage], codex_runs: Sequence[CodexRun]) -
 
     Phase 1 has no stock arm, so this compares SDO against the default,
     concise-verify Codex arm only, at the verify tolerance (SDO can trail by
-    up to 0.05 on the point estimate): the paper's stricter stock comparison
+    up to 0.05 on the point estimate): the stricter stock comparison
     (SDO - Codex-stock >= 0) is not available here (``NO_STOCK_ARM_NOTE``).
     """
 
@@ -653,7 +653,7 @@ def _takeaways_for_ratio(verdict: ClaimVerdict, subject: str, metric: str) -> st
         confidence = "n/a."
     return (
         f"Meaning: {meaning} Confidence: {confidence} "
-        f"Implication: treat this as input to the phase-2 go/no-go, not a final claim about the paper's result. "
+        f"Implication: treat this as input to the phase-2 go/no-go, not a final claim about the original result. "
         f"Next step: replicate at phase-2 scale before reporting {metric} numbers externally."
     )
 

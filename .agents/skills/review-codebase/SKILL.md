@@ -1,6 +1,6 @@
 ---
 name: review-codebase
-description: Review the SDO codebase for correctness, security, paper-architecture alignment, production-versus-SREGym boundaries, code quality, and convention adherence. Use for repository or subsystem audits and /review-codebase; use review-mr for a specific branch or merge-request diff.
+description: Review the SDO codebase for correctness, security, architecture alignment, production-versus-SREGym boundaries, code quality, and convention adherence. Use for repository or subsystem audits and /review-codebase; use review-mr for a specific branch or merge-request diff.
 ---
 
 # Review the SDO codebase
@@ -23,7 +23,7 @@ Treat `apps/` as evaluation input unless the user requests an application review
 ## Process
 
 1. Read [references/review-checklist.md](references/review-checklist.md).
-2. Read applicable `AGENTS.md` files and the code-to-paper matrix.
+2. Read applicable `AGENTS.md` files and `docs/architecture.md`.
 3. Map public entry points, ownership boundaries, persistent state, and external effects before selecting findings.
 4. Trace important claims through tests and call sites; distinguish implemented contracts from live-cluster assumptions.
 5. Run `bash scripts/check_errors.sh` and focused tests when feasible.

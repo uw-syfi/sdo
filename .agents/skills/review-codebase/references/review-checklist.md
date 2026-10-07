@@ -2,7 +2,7 @@
 
 Apply the relevant checks rather than mechanically reporting every item.
 
-## Paper and repository scope
+## Architecture and repository scope
 
 - [ ] `sdo operate` is the only production lifecycle entry point.
 - [ ] Production behavior follows source deployment, independent health judging, `.sdo` bootstrap, and controller handoff.
@@ -64,4 +64,4 @@ Apply the relevant checks rather than mechanically reporting every item.
 - [ ] Controller modules have Go tests for state transitions and restart behavior.
 - [ ] Architecture tests reject production-to-benchmark imports and excluded modules.
 - [ ] Live-cluster claims cite exact smoke-test evidence; unit tests are not presented as deployment proof.
-- [ ] Docs and the code-to-paper matrix match actual entry points and modules.
+- [ ] Docs and the component map in `docs/architecture.md` match actual entry points and modules.

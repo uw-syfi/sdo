@@ -1,6 +1,6 @@
 # SDO architecture
 
-This document describes the production boundaries implemented in this repository and the separate SREGym benchmark boundary. It follows the architecture in `sdo_paper/`; it does not treat historical deployment experiments as production features.
+This document describes the production boundaries implemented in this repository and the separate SREGym benchmark boundary. It does not treat historical deployment experiments as production features.
 
 ## End-to-end lifecycle
 
@@ -30,7 +30,7 @@ controller outcome --> same-session reflection --> refined playbooks/detectors
 
 ## Python orchestration
 
-`sdo/` is the canonical Python package and public product namespace. It implements the paper's agent runtime,
+`sdo/` is the canonical Python package and public product namespace. It implements the agent runtime,
 operational-memory boundary, message contracts, and installation of the separate Go controller.
 
 | Package | Responsibility |
@@ -158,4 +158,64 @@ Supported production scope is the lifecycle, memory, controller, responder, and 
 
 Excluded from production scope are bounded shell-monitor loops, generated shell health checks, a second deployment lifecycle, standalone Compose fault injection, historical trajectory recorders, and benchmark verdict logic inside production packages.
 
-See [sdo-paper-parity-implementation-plan.md](sdo-paper-parity-implementation-plan.md) for the code-to-paper matrix and [testing-guide.md](testing-guide.md) for validation commands.
+See [testing-guide.md](testing-guide.md) for validation commands.
+
+Status meanings:
+
+- **Implemented** — code and focused automated tests exist.
+- **Integrated** — component boundaries are wired in repository code; environment-specific execution still requires external infrastructure.
+- **Benchmark-only** — retained for SREGym evaluation and excluded from production imports.
+
+## Component map
+
+| Capability | Repository implementation | Status | Evidence and limit |
+|---|---|---|---|
+| Single SDO lifecycle | `sdo operate`; `sdo/operation.py`; `sdo/agent_runtime/lifecycle/`; `sdo/controller_install/` | Implemented | CLI and orchestration have focused tests; successful deployment still depends on a Git worktree, Kubernetes, images, credentials, and application source |
+| Source-to-running deployment | `sdo/agent_runtime/lifecycle/deployment.py` | Implemented | Bounded agent attempts, attributable commits, and an independent verifier have unit coverage; no universal application-success claim |
+| Backend-neutral agent boundary | Lifecycle, deployment, responder, and reflection `Protocol` interfaces; `libs/agent_cli` structured Codex and Claude Code adapters | Integrated | Production can select Codex or Claude for fresh lifecycle sessions, incident response, and same-session reflection; successful execution still depends on provider credentials and model availability |
+| Standardized MCP agent outcomes | Structured Pydantic request/result schemas and guarded CLI checks | Integrated | Commit and controller boundaries are structured, but deployment/lifecycle sessions currently use Codex output schemas rather than dedicated MCP outcome servers |
+| Fresh deployer and health judge | `sdo/agent_runtime/lifecycle/agents.py`, `operational_memory.py` | Implemented | Distinct sessions and bounded corrections are tested; the judge authors Go source/tests in a disposable checkout, consumes sandboxed `sdo detector check` feedback in-session, and returns only provenance metadata before an independent validation gate |
+| Human health objective | `.sdo/goal.md`; lifecycle command input | Implemented | Objective is persisted with human ownership and digested by the judge; benchmark verdicts are forbidden inputs |
+| Five-artifact operational memory | `sdo/operational_memory/`; `.sdo/{goal.md,arch.md,playbooks,diagnostics,outcomes.jsonl}` | Implemented | Typed models, repository loading, ownership validation, append-only outcomes, and fixtures have tests |
+| Source-grounded architecture | `sdo/agent_runtime/lifecycle/operational_memory.py` | Implemented | Source commit, topology fingerprint, resource inventory, and coverage validation are deterministic; prose quality remains model-dependent |
+| Go detector SDK | `controller/sdk/` | Implemented | Detector, snapshot, finding, persistence, batching, and test-snapshot contracts have Go tests |
+| End-to-end synthetic-traffic health signal | `controller/sdk/traffic/`, `controller/runtime/prober/`, `controller/runtime/prober_pod.go`, `controller/builder/traffic.py`, `.sdo/diagnostics/traffic/` | Implemented | Judge-authored Go generators and workload profiles run in an isolated prober pod; the deterministic engine, SLO detector, conformance checks, and ownership have Go/Python tests, and a no-LLM kind smoke covers hotel-reservation with the selector fault and decoys; judge authoring quality remains model-dependent |
+| Generated detector validation | `controller/builder/`, `sdo/operational_memory/sandbox.py`, `sdo detector check` | Implemented | Agent self-checks consume controller-authored semantic context before a narrow locked-down compile/test; source is mounted read-only with no network, and self-check success does not replace the full independent acceptance check |
+| Long-running controller | `controller/core/`, `controller/runtime/`, `sdo/controller_install/` | Integrated | Scheduling, cache snapshots, finding state, batching, dispatch, state, leader election, a separate controller namespace, maintenance pause/resume with a fresh informer generation, and supervised relaunch have Go/Python tests; SREGym persistent mode runs one controller pod across problems; live durability depends on cluster resources |
+| Isolated responder | `sdo/contracts/`, `sdo/agent_runtime/responder/`, controller responder jobs | Implemented | Typed request/result contracts, worktree isolation, credential handling, and session backends have tests |
+| Red-herring-resistant diagnosis | `controller/runtime/state_baseline.go`, `helper_cleanup.go`, `sdo/agent_runtime/responder/incident_status.py`, `sdo/operational_memory/diagnosis.py` | Implemented | The last-healthy state diff, the `sdo incident status` verify burst, live-only structured evidence with deterministic post-closure verification, and responder-helper cleanup have Go/Python tests plus a no-LLM kind smoke (the selector fault with decoys present); whether agents diagnose better with them needs live runs |
+| Transactional commit broker | `sdo/operational_memory/commit_broker.py`, `broker_service.py`, `validation.py`, `worktrees.py` | Implemented | `commit` and `recorded-actions` repair evidence policies preserve role/path ownership, validate real source changes, and always commit outcomes/reflections; live-only repairs use structured receipts plus independent verification |
+| Outcome-driven reflection and reuse | `controller/runtime/outcome_memory.go`, `sdo/agent_runtime/responder/reflection.py`, `sdo/operational_memory/broker_service.py` | Implemented | The controller deterministically surfaces compact matching successes for LLM judgment; reflection declares a validated update or justified no-change decision, and exhausted invalid learning remains visibly failed; the first attempt starts by default in a `fresh` session from a bounded incident brief (recorded as `reflection_session_mode`, with `same_session_reflection=false`), and an opt-in `resume` mode resumes the responder session instead |
+| Controller refresh after detector change | `controller/builder/check_cli.py`, runtime rollout records | Integrated | Fingerprint and correlated rollout contracts have tests; `--supervise` rolls out learned detectors after every acknowledged closure of a long-running controller; production rollout requires a cluster and images |
+| SREGym evaluation boundary | `benchmarks/sregym/`, `third_party/sregym/` | Benchmark-only | First-party adapters select `recorded-actions`; strict receipts accept a validated proposal commit or successful action receipts while still requiring durable outcome/reflection commits and independent health evidence |
+
+## Artifact ownership matrix
+
+| Artifact | May author | May update | Validation rule |
+|---|---|---|---|
+| `.sdo/goal.md` | Human | Human | Agents cannot change it |
+| `.sdo/arch.md` | Deployer | Deployer/upkeep | Must match tracked source commit and topology fingerprint |
+| `.sdo/playbooks/` | Bootstrap index, then responder | Responder | Paths, front matter, incident provenance, and history are validated |
+| `.sdo/diagnostics/detectors/health/` | Health judge | Health judge lifecycle | Must preserve objective digest, ownership, compile, and tests |
+| `.sdo/diagnostics/detectors/incidents/` | Responder | Responder | Requires incident ownership/provenance, compile, and matching plus near-miss tests |
+| `.sdo/diagnostics/traffic/generators/`, `traffic/workloads/` | Health judge | Health judge lifecycle | Workloads validated against the engine's caps; generators compile, pass fault-class conformance, and import only allowlisted packages |
+| `.sdo/diagnostics/traffic/generators/incident/`, `traffic/workloads/incident-*.yaml` | Responder | Responder | Same checks; incident-scoped only, so the health acceptance test stays judge-owned |
+| `.sdo/outcomes.jsonl` | Controller | Controller append only | Existing records are immutable |
+
+## Repository scope matrix
+
+| Path | Scope decision |
+|---|---|
+| `sdo/agent_runtime`, `sdo/operational_memory`, `sdo/contracts`, `sdo/controller_install` | Production SDO Python runtime |
+| `controller/sdk`, `core`, `runtime`, `builder` | Production SDO |
+| `libs/sdo_core` | Retained production-neutral support |
+| `libs/agent_cli` | Production coding-agent CLI adapter, also reused by SREGym |
+| `libs/model_config`, `libs/agent_mw`, `libs/pydantic_agent` | Retained agent support used by SREGym |
+| `apps/` | Deployment/evaluation inputs |
+| `benchmarks/sregym/adapter`, `protocol`, `runner`, `experiments`, `analysis` | Retained first-party benchmark integration |
+| `benchmarks/sregym/agents/crucible` | Retained legacy benchmark agent; not production SDO agent logic or operational memory |
+| `third_party/sregym` | Retained external SREGym harness Git submodule |
+| Historical bounded operator, shell health checks, trajectory recorder, UI, prompt stack, standalone fault injection | Excluded; outside the production design |
+| Legacy Python and controller package names | Removed after moving retained implementation to the canonical SDO paths |
+
+This map does not claim model quality, deployment success across all applications, incident-repair success, or experimental improvement. Those require recorded live runs and should be reported with their exact configuration and evidence.

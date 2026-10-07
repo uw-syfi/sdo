@@ -1,6 +1,6 @@
 # SDO (Self-Defining Operator)
 
-SDO is the research prototype described in `sdo_paper/`: an agentic system that deploys an application from source, derives independently checked detectors from a human health objective, and then operates the application through a continuously running Kubernetes controller.
+SDO is a research prototype: an agentic system that deploys an application from source, derives independently checked detectors from a human health objective, and then operates the application through a continuously running Kubernetes controller.
 
 The production design has one entry point and one durable memory model. SREGym integrations remain in this repository as benchmark adapters; they are not part of the production runtime.
 
@@ -95,7 +95,7 @@ bash scripts/check_errors.sh
 uv run pytest tests/unit/
 ```
 
-See [docs/architecture.md](docs/architecture.md) for boundaries and lifecycle details, [docs/testing-guide.md](docs/testing-guide.md) for validation commands, and [docs/sdo-paper-parity-implementation-plan.md](docs/sdo-paper-parity-implementation-plan.md) for the concise code-to-paper scope matrix.
+See [docs/architecture.md](docs/architecture.md) for boundaries and lifecycle details, [docs/testing-guide.md](docs/testing-guide.md) for validation commands, (which also holds the component map and artifact ownership matrix).
 
 ## Repository scope
 
@@ -106,4 +106,4 @@ The repository intentionally retains:
 - SREGym benchmark code, adapters, experiment configuration, and analysis tools;
 - tests, build definitions, and documentation required by those components.
 
-Old bounded deploy-and-monitor operators, generated shell health checks, standalone fault-injection tooling, and historical trajectory formats are outside the paper design and are not part of the supported system.
+Old bounded deploy-and-monitor operators, generated shell health checks, standalone fault-injection tooling, and historical trajectory formats are outside the production design and are not part of the supported system.

@@ -33,7 +33,6 @@ FORBIDDEN_PREFIXES = (
     "benchmarks/sregym/fastloop",
     "docs/",
     "tests/",
-    "sdo_paper/",
 )
 
 #: The scripted-Codex test wrapper is allowed to add exactly this, and nothing else that

@@ -34,7 +34,7 @@ Production code must not import from SREGym packages. Benchmark adapters may imp
 - Detector runtime code is deterministic Go using `controller/sdk`; it must not call an LLM or inspect benchmark verdicts.
 - `controller/runtime` remains transport-neutral. SREGym submission relays and receipts stay behind the benchmark adapter.
 
-When changing operational-memory formats or experiment result structures, update `.agents/skills/analyze-experiment/references/`. When moving production or benchmark boundaries, update `docs/architecture.md` and the paper-scope matrix.
+When changing operational-memory formats or experiment result structures, update `.agents/skills/analyze-experiment/references/`. When moving production or benchmark boundaries, update `docs/architecture.md` (including its component map, artifact ownership matrix, and repository scope table).
 
 ## Validation after code edits
 

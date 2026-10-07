@@ -1,6 +1,6 @@
 # Source-deployment evaluation applications
 
-These applications exercise the paper-described SDO lifecycle: source-grounded architecture capture, Kubernetes deployment, objective-specific health detectors, and controller-driven incident response. They are evaluation inputs rather than production SDO modules.
+These applications exercise the SDO lifecycle: source-grounded architecture capture, Kubernetes deployment, objective-specific health detectors, and controller-driven incident response. They are evaluation inputs rather than production SDO modules.
 
 Some applications also participate in SREGym or deployment experiments. Application-specific Compose files may remain as upstream source material, but the production SDO runtime targets Kubernetes and does not generate shell health checks.
 
