@@ -26,6 +26,7 @@ except ModuleNotFoundError:
 from benchmarks.sregym.runner.experiment import (
     ExperimentConfig,
     RunnerEnv,
+    reject_removed_crucible_keys,
     variant_config_from_raw,
 )
 
@@ -116,11 +117,16 @@ def load_pipeline_config(path: Path) -> PipelineConfig:
     pipeline_raw = raw.get("pipeline", {})
     defaults_raw = raw.get("defaults", {})
     stages_raw = raw.get("stages", [])
+    reject_removed_crucible_keys(defaults_raw, f"{path} [defaults]")
+    reject_removed_crucible_keys(defaults_raw.get("env", {}), f"{path} [defaults.env]")
 
     stages: list[StageConfig] = []
     for s in stages_raw:
         s = dict(s)  # copy so we can pop
         name = s.pop("name", "")
+        reject_removed_crucible_keys(s, f"{path} stage {name!r}")
+        reject_removed_crucible_keys(s.get("runner", {}), f"{path} stage {name!r} [runner]")
+        reject_removed_crucible_keys(s.get("runner", {}).get("env", {}), f"{path} stage {name!r} [runner.env]")
         chain_application_workspace = s.pop("chain_application_workspace", False)
         runner_overrides = s.pop("runner", {})
         # Anything remaining under the stage entry (e.g. agent_config)

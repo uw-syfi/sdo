@@ -1497,3 +1497,22 @@ def _pipeline_without_flag(tmp_path: Path) -> Path:
     path = tmp_path / "plain.toml"
     path.write_text('[pipeline]\nname = "p"\n[defaults]\n[[stages]]\nname = "a"\n', encoding="utf-8")
     return path
+
+
+@pytest.mark.parametrize(
+    ("section", "key"),
+    [("stage", "chain_kb"), ("defaults", "enable_summary"), ("defaults.env", "crucible_seed_kb_dir")],
+)
+def test_pipeline_rejects_keys_of_the_removed_crucible_agent(tmp_path: Path, section: str, key: str) -> None:
+    stage = {"stage": f"{key} = true\n", "defaults": "", "defaults.env": ""}[section]
+    defaults = {"stage": "", "defaults": f"{key} = true\n", "defaults.env": ""}[section]
+    env = {"stage": "", "defaults": "", "defaults.env": f'{key} = "x"\n'}[section]
+    path = tmp_path / "pipeline.toml"
+    path.write_text(
+        f'[pipeline]\nname = "p"\n\n[defaults]\nagent = "sdo_codex"\n{defaults}\n[defaults.env]\n{env}\n'
+        f'[[stages]]\nname = "s1"\n{stage}',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match=key):
+        load_pipeline_config(path)

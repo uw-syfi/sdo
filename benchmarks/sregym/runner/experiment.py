@@ -86,6 +86,18 @@ def application_workspace_mode(value: ApplicationWorkspaceSetting) -> Applicatio
     return value
 
 
+#: Keys that only configured the removed Crucible agent. A config that still sets one
+#: was written for Crucible, so it is rejected instead of being silently ignored.
+REMOVED_CRUCIBLE_KEYS = frozenset({"chain_kb", "enable_summary", "crucible_seed_kb_dir"})
+
+
+def reject_removed_crucible_keys(section: dict[str, Any], where: str) -> None:
+    """Raise ``ValueError`` if *section* sets a key of the removed Crucible agent."""
+    removed = sorted(REMOVED_CRUCIBLE_KEYS & section.keys())
+    if removed:
+        raise ValueError(f"{where}: {', '.join(removed)} configured the removed Crucible agent; delete it")
+
+
 @dataclass
 class RunnerEnv:
     judge_model_id: str = ""
@@ -209,6 +221,8 @@ def load_experiment_config(path: Path) -> ExperimentConfig:
     runner = raw.get("runner", {})
     variants_raw = runner.pop("variants", {})
     env_raw = runner.pop("env", {})
+    reject_removed_crucible_keys(runner, f"{path} [runner]")
+    reject_removed_crucible_keys(env_raw, f"{path} [runner.env]")
 
     variants = variant_config_from_raw(variants_raw)
 

@@ -757,3 +757,12 @@ def test_submit_done_returns_feedback_stays_unread_outside_its_own_plumbing() ->
     )
     for owner in owners:
         assert any(needle in owner.read_text(encoding="utf-8") for needle in needles), owner
+
+
+@pytest.mark.parametrize(("table", "key"), [("runner", "enable_summary"), ("runner.env", "crucible_seed_kb_dir")])
+def test_experiment_rejects_keys_of_the_removed_crucible_agent(tmp_path: Path, table: str, key: str) -> None:
+    path = tmp_path / "exp.toml"
+    path.write_text(f'[{table}]\n{key} = "x"\n', encoding="utf-8")
+
+    with pytest.raises(ValueError, match=key):
+        load_experiment_config(path)
