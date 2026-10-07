@@ -1,7 +1,7 @@
 """Analyze the phase-1 live assurance matrix (the assurance plan (a)).
 
-Phase 1 has no stock (no-verify) Codex arm (user decision, 2026-09-28): its sole Codex arm is the default, concise-verify
-baseline. Every claim below compares SDO against that one arm. Where the
+Phase 1 has no stock (no-verify) Codex arm (user decision, 2026-09-28): its sole
+Codex arm is the default, concise-verify baseline. Every claim below compares SDO against that one arm. Where the
 paper's own comparisons were against a stock baseline, the claim's summary
 notes that phase 1 has no stock arm to compare against.
 
