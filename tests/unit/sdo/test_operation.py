@@ -266,6 +266,23 @@ def test_cli_exposes_sdo_operate_and_maps_all_flags(tmp_path: Path) -> None:
     ]
 
 
+def test_operate_defaults_to_gpt_6_luna_when_sdo_model_is_unset(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("SDO_MODEL", raising=False)
+    repository = _repository(tmp_path)
+    captured: list[OperationConfig] = []
+
+    exit_code = main(
+        ["operate", str(repository), "--namespace", "demo", "--goal", "Users can complete requests."],
+        operation_runner=lambda config: captured.append(config),
+    )
+
+    assert exit_code == 0
+    assert [config.model for config in captured] == ["gpt-6-luna"]
+    assert OperationConfig(repository, "demo", "store", "objective").model == "gpt-6-luna"
+
+
 def test_cli_detector_check_validates_only_the_current_workspace(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:

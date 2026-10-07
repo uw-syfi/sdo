@@ -66,7 +66,7 @@ def _build_parser() -> argparse.ArgumentParser:
     goal.add_argument("--goal", help="human-owned health objective")
     goal.add_argument("--goal-file", type=Path, help="file containing the human-owned health objective")
     operate_parser.add_argument("--application", help="application name; defaults to the repository directory name")
-    operate_parser.add_argument("--model", default=os.getenv("SDO_MODEL", "gpt-5.4"))
+    operate_parser.add_argument("--model", default=os.getenv("SDO_MODEL", "gpt-6-luna"))
     operate_parser.add_argument("--controller-image", default="sdo-controller:v0.1.0")
     operate_parser.add_argument("--responder-image", default="sdo-responder:v0.1.0")
     operate_parser.add_argument("--validator-image", default="sdo-detector-validator:v0.1.0")

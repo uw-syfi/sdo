@@ -209,7 +209,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--backend", choices=("agent-cli",), default=config.get("backend", "agent-cli"))
     parser.add_argument("--provider", choices=("codex", "claude"), default=config.get("provider", "codex"))
-    parser.add_argument("--model", default=config.get("model", os.getenv("MODEL_ID", "gpt-5.4")))
+    parser.add_argument("--model", default=config.get("model", os.getenv("MODEL_ID", "gpt-6-luna")))
     parser.add_argument("--timeout-sec", type=int, default=int(config.get("timeout_sec", 1800)))
     raw_detection = config.get("detection_timeout_sec")
     parser.add_argument(

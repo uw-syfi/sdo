@@ -304,7 +304,7 @@ def test_a_matching_stable_kubeconfig_passes(fake_host: FakeHost, sregym_dir: Pa
     ("config", "expected"),
     [
         (_luna(agent_config={"sdo_codex": {"provider": "claude", "model": "claude-haiku-4-5"}}), "responder resolves"),
-        (_luna(agent_config={"sdo_codex": {"provider": "codex"}}), "codex:gpt-5.4"),
+        (_luna(agent_config={"sdo_codex": {"provider": "codex", "model": "gpt-5.4"}}), "codex:gpt-5.4"),
         (_luna(env=RunnerEnv(judge_model_id="codex-gpt-6-astra")), "judge is 'codex-gpt-6-astra'"),
         (_luna("codex", model="gpt-5.4"), "runner.model is 'gpt-5.4'"),
         (_luna("codex", reasoning_effort="high"), "reasoning_effort is 'high'"),
@@ -318,6 +318,14 @@ def test_any_role_or_judge_off_the_luna_policy_aborts(
 
     assert check.status == "fail"
     assert expected in check.detail
+
+
+def test_an_sdo_codex_config_without_a_model_uses_the_luna_driver_default(
+    fake_host: FakeHost, sregym_dir: Path
+) -> None:
+    config = _luna(agent_config={"sdo_codex": {"provider": "codex"}})
+
+    assert _check(_preflight([config], fake_host, sregym_dir), "model-policy").status == "pass"
 
 
 @pytest.mark.parametrize(

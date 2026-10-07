@@ -101,7 +101,7 @@ git -C "${application}" add deploy/application.yaml
 git -C "${application}" commit -qm "deploy smoke application"
 
 cd "${repo_root}"
-APP_ROOT="${application}" REAL_LIFECYCLE="${real_lifecycle}" AGENT_PROVIDER="${agent_provider}" MODEL="${SDO_SMOKE_MODEL:-gpt-5.4}" uv run python - <<'PY'
+APP_ROOT="${application}" REAL_LIFECYCLE="${real_lifecycle}" AGENT_PROVIDER="${agent_provider}" MODEL="${SDO_SMOKE_MODEL:-gpt-6-luna}" uv run python - <<'PY'
 import os
 from pathlib import Path
 
@@ -253,7 +253,7 @@ fi
 
 APP_ROOT="${application}" \
 NAMESPACE="${namespace}" \
-MODEL="${SDO_SMOKE_MODEL:-gpt-5.4}" \
+MODEL="${SDO_SMOKE_MODEL:-gpt-6-luna}" \
 AGENT_PROVIDER="${agent_provider}" \
 REAL_LIFECYCLE="${real_lifecycle}" \
 uv run python - <<'PY' &

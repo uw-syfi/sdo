@@ -55,7 +55,7 @@ class OperationConfig:
     namespace: str
     application: str
     health_objective: str
-    model: str = "gpt-5.4"
+    model: str = "gpt-6-luna"
     controller_image: str = "sdo-controller:v0.1.0"
     responder_image: str = "sdo-responder:v0.1.0"
     validator_image: str = "sdo-detector-validator:v0.1.0"

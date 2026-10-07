@@ -91,7 +91,7 @@ SDO_IMAGE_ENTRY_POINTS = {
 #: Images that run agents, so their Codex CLI and agentshim must match the pins.
 AGENT_IMAGES = ("controller_image", "responder_image")
 #: The SDO driver's model when neither ``[agent.sdo_codex].model`` nor ``MODEL_ID`` is set.
-SDO_DRIVER_DEFAULT_MODEL = "gpt-5.4"
+SDO_DRIVER_DEFAULT_MODEL = "gpt-6-luna"
 #: Env overrides some SDO entry points read when they are given no model.
 SDO_MODEL_ENV_OVERRIDES = ("SDO_RESPONDER_MODEL", "SDO_LIFECYCLE_MODEL", "SDO_DEPLOYMENT_MODEL")
 JUDGE_EFFORT_ENV = "JUDGE_REASONING_EFFORT"
