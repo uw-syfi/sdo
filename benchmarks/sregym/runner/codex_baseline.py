@@ -67,7 +67,7 @@ gone.
 
 #: Environment disclosure (``exec_disclosure = true``), kept separate from the
 #: verify text. It states that exec/attach/port-forward are unavailable, so it is
-#: only true when ``allow_exec`` is off; exec parity (fairness-DECISIONS.md)
+#: only true when ``allow_exec`` is off; exec parity
 #: gives both arms exec, so phase 1 leaves it off. It names no fault, resource or decoy.
 EXEC_DISCLOSURE_PROMPT = """\
 ENVIRONMENT: `kubectl exec`, `kubectl attach`, `kubectl port-forward` and `kubectl cp` are unavailable in this \

@@ -4,8 +4,7 @@ SDO must discover fault-relevant checks from the application and its objective. 
 tokens were chosen because they name, or were written against, the SREGym phase-1
 faults (missing ConfigMap, wrong Service selector, deny-all NetworkPolicy, and the
 composites K1/K2), their decoy ConfigMaps, or the hotel-reservation application. Each
-one appeared in an SDO prompt or template before ``docs/fairness-DECISIONS.md`` removed
-it. A generic operational mechanism is allowed; a hint that only makes sense once you
+one appeared in an SDO prompt or template before it was removed. A generic operational mechanism is allowed; a hint that only makes sense once you
 know the benchmark's problems is not.
 
 Keep the list focused: add a token only when it identifies a specific benchmark fault,

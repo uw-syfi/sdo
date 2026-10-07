@@ -1,8 +1,7 @@
 """Record the healthy application namespace for the opt-in detector healthy-baseline gate.
 
 The commit broker (``--healthy-baseline-source``) replays every proposed incident detector on
-snapshots of the healthy application and rejects one that fires on them
-(``docs/detector-healthy-baseline-decisions.md``). Nothing in the production runtime records those
+snapshots of the healthy application and rejects one that fires on them. Nothing in the production runtime records those
 snapshots, so the benchmark harness does: just before it injects a fault, while the application is
 deployed and no fault exists, it dumps the namespace in the ``sdktest.Snapshot`` JSON shape and
 writes the files onto the controller's repository volume, outside the application repository. This

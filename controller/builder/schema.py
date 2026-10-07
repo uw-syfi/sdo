@@ -1,7 +1,6 @@
 """Validator-image schema identity.
 
-Stage 4 of the single-source-of-truth track (``docs/seam-contracts-decisions.md``,
-seam 4). The validator image bakes a copy of the Go SDK that app-authored
+Stage 4 of the single-source-of-truth track (seam 4). The validator image bakes a copy of the Go SDK that app-authored
 detectors compile and are validated against, plus the manifest schema. When that
 schema changes but the image is not rebuilt, the stale image validates detectors
 against a *different* contract than the one in the tree -- the documented

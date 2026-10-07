@@ -71,8 +71,8 @@ rules:
   # built-in `edit` ClusterRole rather than around any particular repair. It omits
   # Secrets (their values must never reach a model) and RBAC objects. Unlike `edit`,
   # it grants pods/exec, pods/attach and pods/portforward: exec parity with the
-  # Codex baseline (docs/fairness-DECISIONS.md). Exec can read secrets mounted into
-  # a pod; that trade-off is accepted and logged there.
+  # Codex baseline. Exec can read secrets mounted into
+  # a pod; that trade-off is accepted.
   - apiGroups: [""]
     resources: ["configmaps", "services", "pods", "persistentvolumeclaims"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]

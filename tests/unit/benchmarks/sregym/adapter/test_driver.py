@@ -853,7 +853,7 @@ def test_strict_production_receipt_requires_job_route_reflection_clear_ack_and_c
     with pytest.raises(ControllerInstallError, match="detector review"):
         validate_production_receipt({**receipt, "detector_review_required_at": "2026-07-09T18:05:30Z"})
     validate_production_receipt({**receipt, "detector_review_required_at": None})
-    # An external recovery is a valid audit record that is never credited as a mitigation (D30).
+    # An external recovery is a valid audit record that is never credited as a mitigation.
     validate_production_receipt({**receipt, "recovery_attribution": "external"})
     assert receipt_resolution({**receipt, "recovery_attribution": "external"}) == "external_recovery"
     assert receipt_resolution({**receipt, "recovery_attribution": "responder"}) == "sdo_mitigated"
@@ -932,7 +932,7 @@ def test_recorded_actions_receipt_accepts_actions_without_proposal_commit() -> N
     }
 
     validate_production_receipt(receipt)
-    # No recorded change means nothing was mitigated; it is a valid audit record, never a mitigation (D30).
+    # No recorded change means nothing was mitigated; it is a valid audit record, never a mitigation.
     no_action = {**receipt, "repair_actions": []}
     validate_production_receipt(no_action)
     assert receipt_resolution(no_action) == "cleared_without_sdo_action"
@@ -1780,7 +1780,7 @@ def test_receipt_diagnosis_verification_comes_from_the_broker_closure() -> None:
 
 
 def test_receipt_diagnosis_uses_every_controller_fact_and_withholds_credit_from_an_external_fix() -> None:
-    """F8: the receipt must not credit SDO with a recovery its own repair does not back."""
+    """The receipt must not credit SDO with a recovery its own repair does not back."""
 
     fixtures = Path(__file__).resolve().parents[4] / "fixtures" / "sdo" / "contracts"
     request = json.loads((fixtures / "incident_request_state_changes.json").read_text(encoding="utf-8"))

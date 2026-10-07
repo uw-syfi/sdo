@@ -27,7 +27,7 @@ const DefaultCapacity = 64
 // NetworkPolicy that denies new connections, is classified as its own
 // failure (Sample.DialFailed) and counted well before the general request
 // deadline would otherwise cancel it with a generic "context deadline
-// exceeded". See docs/feedback-loop-DECISIONS.md D25.
+// exceeded".
 const DialTimeout = 1 * time.Second
 
 // Config configures a Prober.

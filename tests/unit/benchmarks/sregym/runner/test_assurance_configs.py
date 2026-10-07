@@ -157,7 +157,7 @@ FRESH_LIFECYCLE_SEED = "/path/to/assure-runs/seed-dd6bc81"
 
 @pytest.mark.parametrize("name", sorted(SDO))
 def test_each_sdo_pipeline_waits_for_a_fresh_lifecycle_seed(name: str) -> None:
-    """Seed ``30e023d`` was built with benchmark-tailored hints (docs/fairness-DECISIONS.md).
+    """Seed ``30e023d`` was built with benchmark-tailored hints.
 
     Phase 1 must seed from a fresh lifecycle on the de-tailored code. The launch agent filled
     in the placeholder with the fresh seed recorded above.
@@ -198,7 +198,7 @@ def test_the_codex_arm_is_the_default_concise_verify_baseline_not_stock_or_full(
     """Phase 1 has no stock arm (user decision, 2026-09-28): every Codex lane runs the default."""
     for name in VERIFY:
         config = load_experiment_config(PHASE1 / name)
-        # Exec parity (fairness-DECISIONS.md): exec on through the proxy, and no disclosure text.
+        # Exec parity: exec on through the proxy, and no disclosure text.
         assert config.agent_config["codex"] == {"verify_protocol": "concise", "allow_exec": True}
 
 

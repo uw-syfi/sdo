@@ -53,8 +53,7 @@ CAUSE_ADMISSIBILITY_ENV = "SDO_CAUSE_ADMISSIBILITY"
 #: Supported gate modes. ``off`` (default) returns the responder's result
 #: byte-for-byte unchanged, so enabling the gate is opt-in and a run without it
 #: is reproducible; ``on`` withholds inadmissible causes. The default stays off
-#: until a gate-on-vs-off validation arm earns a flip (see
-#: ``docs/cause-admissibility-decisions.md``).
+#: until a gate-on-vs-off validation arm earns a flip.
 CAUSE_ADMISSIBILITY_MODES: tuple[str, ...] = ("on", "off")
 
 #: Evidence kinds an independent check can anchor to an incident signal: a

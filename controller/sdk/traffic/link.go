@@ -30,7 +30,7 @@ const (
 	// DefaultLinkFailures is how many consecutive failed dials report an
 	// edge. With the default interval and timeout it spans at least about
 	// five seconds, which clears the roughly three-second data-plane stalls
-	// a small cluster shows after a pod-network change (N13) with margin.
+	// a small cluster shows after a pod-network change with margin.
 	DefaultLinkFailures = 5
 	MinLinkFailures     = 2
 	MaxLinkFailures     = 60

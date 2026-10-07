@@ -158,7 +158,7 @@ def _final_state_changes(*changes: StateChange) -> StateChanges:
 
 
 def test_a_composites_later_fault_is_confirmed_against_the_closing_views_diff() -> None:
-    """N11: K2's readiness-probe fault lands ~6s after the selector fault,
+    """K2's readiness-probe fault lands ~6s after the selector fault,
 
     while the incident is still open, so it is missing from the request's
     dispatch-time diff but present in the controller's diff as of
@@ -222,7 +222,7 @@ def test_legacy_results_without_evidence_are_reported_as_such() -> None:
     assert verify_diagnosis(_request(), None, final_detector_states=[]) == []
 
 
-# F8: a confirmed cause must be backed by the responder's own repair.
+# A confirmed cause must be backed by the responder's own repair.
 
 _NETWORK_POLICY = ObjectRef(kind="NetworkPolicy", namespace="hotel-reservation", name="deny-all")
 _CONFIGMAP = ObjectRef(kind="ConfigMap", namespace="hotel-reservation", name="geo-config")
@@ -255,7 +255,7 @@ def _configmap_cause() -> ConfirmedRootCause:
 
 
 def test_a_wrong_cause_is_not_confirmed_when_someone_else_fixed_the_fault() -> None:
-    """F8 (``wrong_only_claimed``): the responder blames and restarts frontend.
+    """The responder blames and restarts frontend.
 
     Someone else reverts the faulty configuration inside the verification
     window, so every explained detector flips. The restart touched the blamed
@@ -475,7 +475,7 @@ def test_a_wrong_fix_citing_its_own_edit_is_not_confirmed() -> None:
 
 
 def test_the_same_citation_without_observation_times_was_confirmed() -> None:
-    """Records from controllers that predate the observation times keep N11's union rule."""
+    """Records from controllers that predate the observation times keep the union rule."""
 
     restart_leftover = StateChange(kind="Deployment", name="frontend", change="modified")
 
@@ -491,7 +491,7 @@ def test_the_same_citation_without_observation_times_was_confirmed() -> None:
 
 
 def test_a_late_fault_seen_before_the_repair_is_still_confirmed() -> None:
-    """N11 keeps working: K2's late component lands after dispatch but before the responder's repair."""
+    """The union rule keeps working: K2's late component lands after dispatch but before the responder's repair."""
 
     late_fault = StateChange(kind="Deployment", name="frontend", change="modified")
 

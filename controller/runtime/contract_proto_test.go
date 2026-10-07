@@ -15,7 +15,7 @@ import (
 )
 
 // Stage 1 vertical slice of the proto single-source-of-truth track
-// (docs/seam-contracts-decisions.md): prove ObjectRef end-to-end through
+// prove ObjectRef end-to-end through
 // protojson before migrating the full message tree in Stage 2.
 //
 // The proto schema governs the schema, not the encoding: contracts stay

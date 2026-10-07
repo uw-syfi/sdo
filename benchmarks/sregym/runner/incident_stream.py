@@ -83,7 +83,7 @@ class Catalog:
 
 _HOTEL = "hotel_reservation"
 
-#: Verified source-deployable and injectable on a Hotel Reservation kind cluster (see the decisions log).
+#: Verified source-deployable and injectable on a Hotel Reservation kind cluster.
 HOTEL_CATALOG = Catalog(
     core=(
         FaultFamily(
@@ -211,7 +211,7 @@ def _is_learnable(incidents: list[StreamIncident], catalog: Catalog) -> bool:
 
 
 #: The first four incidents of the stream, pinned. The first attempt sampled them from the seed, then had to
-#: replace a novel fault that namespace-scoped SDO can neither observe nor repair (see the decisions log);
+#: replace a novel fault that namespace-scoped SDO can neither observe nor repair;
 #: its four completed incidents are kept as this opening so they need not be rerun.
 STREAM_OPENING = (
     "network_policy_block",

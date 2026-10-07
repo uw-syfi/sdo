@@ -1,7 +1,6 @@
 """Committed validator-image schema identity (the expected value).
 
-Stage 4 of the single-source-of-truth track (``docs/seam-contracts-decisions.md``,
-seam 4). This is the schema identity the production detector-validation path
+Stage 4 of the single-source-of-truth track (seam 4). This is the schema identity the production detector-validation path
 expects the validator image to embed. The validator sandbox passes it to the
 in-image ``controller.builder.check_cli`` as ``--expect-schema``; the image
 recomputes its own identity from its baked SDK and fails loud on a mismatch (a

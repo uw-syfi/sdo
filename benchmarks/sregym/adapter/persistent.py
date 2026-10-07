@@ -116,7 +116,7 @@ class ReceiptRejectedError(ControllerInstallError):
 
     The rejected receipt and its error are already on disk. The rejection is
     that one incident's outcome: it must not block the next stage's injection
-    or fail a teardown (D30), so pipeline callers record it and go on.
+    or fail a teardown, so pipeline callers record it and go on.
     """
 
 

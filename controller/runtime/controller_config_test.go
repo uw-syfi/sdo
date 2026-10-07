@@ -16,7 +16,7 @@ import (
 )
 
 // Stage 3 of the proto single-source-of-truth track
-// (docs/seam-contracts-decisions.md, seam 3): the launcher populates one typed
+// (seam 3): the launcher populates one typed
 // ControllerConfig instead of hand-mirroring the controller's argv flags. These
 // tests fence the two halves of that seam — protojson load + protovalidate, and
 // the single config->flags expansion — so a launcher that sets a field the

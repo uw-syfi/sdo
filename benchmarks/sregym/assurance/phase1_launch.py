@@ -2,7 +2,7 @@
 
 One command starts the eight phase-1 lanes (``assure-w0``..``assure-w7``),
 each bound to its config in ``experiments/assurance/phase1/`` by the lane the
-config's own header names (the assurance plan D11). Before anything starts:
+config's own header names. Before anything starts:
 
 - every lane's cluster is verified (never created here: SREGym's own harness
   bootstraps a lane's kind cluster lazily on first use, so "verify" only
@@ -81,7 +81,7 @@ LANE_HEADER = re.compile(r"lane (assure-w(\d))")
 LANE_COUNT = 8
 LANE_PREFIX = "assure-w"
 
-#: The eight assurance-plan (d) matrix lanes, grouped by arm (D11). Phase 1 has no
+#: The eight assurance-plan (d) matrix lanes, grouped by arm. Phase 1 has no
 #: stock (no-verify) Codex arm (user decision, 2026-09-28): the sole Codex arm
 #: is the default, concise-verify baseline, on w4-w7.
 ARM_OF_PREFIX: tuple[tuple[str, str], ...] = (
@@ -134,7 +134,7 @@ class LaneBinding:
 
 
 def parse_lane_from_header(path: Path) -> str:
-    """The lane a phase-1 config's header comment names (the assurance plan D11)."""
+    """The lane a phase-1 config's header comment names."""
 
     header = path.read_text(encoding="utf-8").split("\n\n", 1)[0]
     matches = LANE_HEADER.findall(header)

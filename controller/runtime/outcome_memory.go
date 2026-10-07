@@ -27,7 +27,7 @@ type outcomeMemoryRecord struct {
 }
 
 // discreditedVerdicts mark a root cause SDO found false (contradicted) or not
-// backed by the responder's own repair (unattributed, F8). Such a cause is
+// backed by the responder's own repair (unattributed). Such a cause is
 // never surfaced to a later responder as a known root cause.
 var discreditedVerdicts = map[string]struct{}{"contradicted": {}, "unattributed": {}}
 

@@ -44,7 +44,7 @@ type RuntimeState struct {
 	DetectorReviewRequiredAt time.Time               `json:"detector_review_required_at,omitempty"`
 	DetectorReviewReason     string                  `json:"detector_review_reason,omitempty"`
 	// DetectorClearSince is the start of each detector's current clear
-	// streak, so a restarted controller keeps HealthClearedAt exact (F8).
+	// streak, so a restarted controller keeps HealthClearedAt exact.
 	DetectorClearSince map[string]time.Time `json:"detector_clear_since,omitempty"`
 	// IncidentObservedChanges is every object seen changed while the open
 	// incident lasted, so a restart keeps first observations exact.

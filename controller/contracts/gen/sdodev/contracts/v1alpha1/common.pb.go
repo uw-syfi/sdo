@@ -7,7 +7,7 @@
 // Package sdo.contracts.v1alpha1 is the single source of truth for the
 // structured contracts that cross the SDO controller<->responder and
 // Python<->Go seams. These messages are serialized as protojson on the wire;
-// proto governs the schema, not the encoding (see docs/seam-contracts-decisions.md).
+// proto governs the schema, not the encoding.
 
 package contractsv1alpha1
 

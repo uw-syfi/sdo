@@ -463,8 +463,8 @@ class ScriptedAgent:
         receipt: dict[str, Any] = json.loads(receipt_path.read_text(encoding="utf-8")) if receipt_path.is_file() else {}
         checks = record.checks
         rejected_path = artifacts / REJECTED_RECEIPT_FILENAME
-        # A closure the responder did not mitigate (for example F16's cancelled no-op) is a valid
-        # receipt whose resolution is not ``sdo_mitigated`` (D30); one that failed strict validation
+        # A closure the responder did not mitigate (for example a cancelled no-op) is a valid
+        # receipt whose resolution is not ``sdo_mitigated``; one that failed strict validation
         # for another reason (for example a late detector review) leaves its evidence in the rejected receipt.
         evidence = receipt
         if not receipt and expect.resolution != "mitigated" and rejected_path.is_file():

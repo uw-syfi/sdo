@@ -139,7 +139,7 @@ type RepairActionReceipt struct {
 	Kind     string `json:"kind"`
 	Target   string `json:"target"`
 	// Resources are the objects the action mutated; diagnosis verification
-	// credits a root cause only to a repair that touched its resources (F8).
+	// credits a root cause only to a repair that touched its resources.
 	Resources   []sdk.ObjectRef `json:"resources,omitempty"`
 	Summary     string          `json:"summary"`
 	Details     string          `json:"details"`
@@ -193,7 +193,7 @@ type IncidentClosure struct {
 	IncidentDetectorFiredAfterDispatch  bool                    `json:"incident_detector_fired_after_dispatch"`
 	NoIncidentDetectorFired             bool                    `json:"no_incident_detector_fired"`
 	// FinalStateChanges is the configuration diff against the healthy
-	// baseline at verification time (N11): a composite fault's later
+	// baseline at verification time: a composite fault's later
 	// component can land a few seconds after dispatch, while the incident is
 	// still open, so it is missing from Request.StateChanges but present
 	// here. nil without a baseline. Computed from the in-memory informer
@@ -205,7 +205,7 @@ type IncidentClosure struct {
 	VerifiedAt           time.Time     `json:"verified_at"`
 	// HealthClearedAt is when the closure gate's detectors began their final
 	// streak of clear evaluations. Only a repair action that started by then
-	// can back a root cause (F8). nil when no streak is on record.
+	// can back a root cause. nil when no streak is on record.
 	HealthClearedAt *time.Time `json:"health_cleared_at,omitempty"`
 	// ObservedStateChanges is every object the controller saw differ from
 	// the healthy baseline while the incident was open, with its first

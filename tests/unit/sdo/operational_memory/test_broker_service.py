@@ -450,7 +450,7 @@ def _recorded_actions_closure(
 
 
 def test_recorded_actions_healed_stray_closes_as_cleared_without_action_and_does_not_learn(tmp_path: Path) -> None:
-    """N13 / F16: a completed result with no action, but health already clear, is a no-op.
+    """A completed result with no action, but health already clear, is a no-op.
 
     A real responder that finds an already-healed transient (for example a stray 3 s
     data-plane stall) truthfully reports this shape. It must close cleanly instead of
@@ -1304,7 +1304,7 @@ def test_non_exact_or_unproven_warm_success_still_runs_full_reflection(
 
 
 def test_a_warm_success_whose_every_repair_failed_is_an_unlearned_external_recovery(tmp_path: Path) -> None:
-    """No successful repair action backs the cause, so health recovered for another reason (F8)."""
+    """No successful repair action backs the cause, so health recovered for another reason."""
 
     target = tmp_path / "target"
     worktrees = tmp_path / "worktrees"
@@ -1463,7 +1463,7 @@ def test_broker_cli_reflection_session_defaults_to_fresh() -> None:
         parser.parse_args([*required, "--reflection-session", "transcript"])
 
 
-# F8: a cause is learned only when the responder's own repair backs it.
+# A cause is learned only when the responder's own repair backs it.
 
 
 class AlwaysReflectReflector(SessionReflector):
@@ -1517,7 +1517,7 @@ def _attribution_closure(worktree: Path, base_commit: str, *, cause: str, repair
 def test_a_wrong_cause_fixed_by_someone_else_is_never_learned(
     tmp_path: Path, reflector_type: type[SessionReflector]
 ) -> None:
-    """F8: the responder blamed frontend and restarted it; someone else reverted the real fault."""
+    """The responder blamed frontend and restarted it; someone else reverted the real fault."""
 
     target = tmp_path / "target"
     worktrees = tmp_path / "worktrees"
@@ -1578,7 +1578,7 @@ _GO_FIXTURES = Path(__file__).resolve().parents[3] / "fixtures" / "sdo" / "contr
 def test_the_broker_processes_a_go_encoded_closure_into_a_ledger_and_outcome(
     tmp_path: Path, fixture: str, classification: OutcomeClassification, verdict: str
 ) -> None:
-    """The Go closure, as the broker CLI receives it, commits an outcome with the F17 facts applied."""
+    """The Go closure, as the broker CLI receives it, commits an outcome with the health-cleared facts applied."""
 
     target = tmp_path / "target"
     target.mkdir()

@@ -27,7 +27,7 @@ RECEIPT_RESOLUTIONS = (SDO_MITIGATED, EXTERNAL_RECOVERY, CLEARED_WITHOUT_SDO_ACT
 
 
 def receipt_resolution(receipt: dict[str, Any]) -> str:
-    """How the incident closed, derived from the receipt's own evidence (D30).
+    """How the incident closed, derived from the receipt's own evidence.
 
     Only ``sdo_mitigated`` credits SDO with the recovery and needs the
     responder's completion and same-session reflection. The other two are

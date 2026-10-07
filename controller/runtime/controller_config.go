@@ -17,7 +17,7 @@ import (
 // launcher mounted, instead of a hand-mirrored argv flag list. A field the
 // launcher sets that the controller does not define is then a build error on
 // the shared proto, not an "unrecognized arguments" crash ten minutes into a
-// run (the --closeout-state-gate drift class; docs/seam-contracts-decisions.md).
+// run (the --closeout-state-gate drift class).
 const LaunchConfigFlag = "--config"
 
 // LoadControllerConfig reads and validates a protojson ControllerConfig.

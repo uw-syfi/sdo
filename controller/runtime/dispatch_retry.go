@@ -15,7 +15,7 @@ const (
 // transient dispatch failure: a watcher, transport, or leadership-guard
 // error that does not prove the durable responder Job stopped, so the same
 // incident effect re-runs and the idempotent dispatcher rejoins the existing
-// Job. A Job Kubernetes marks failed is a different, terminal case (F9) and
+// Job. A Job Kubernetes marks failed is a different, terminal case and
 // never retries through this policy.
 //
 // Zero fields take the defaults: exponential backoff from 2s, capped at

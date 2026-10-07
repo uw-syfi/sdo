@@ -14,7 +14,7 @@ claims against controller-owned facts:
   cause;
 - every explained detector must have fired at dispatch and be clear after
   the fix; and
-- the responder's own recorded repair must back the cause (F8): a successful
+- the responder's own recorded repair must back the cause: a successful
   repair action that started before health cleared must have touched one of
   the cause's resources. When the cause blames an object that changed since
   the healthy baseline, touching that object is enough. Otherwise the cause
@@ -22,7 +22,7 @@ claims against controller-owned facts:
   something other than the responder's repair reverted.
 
 A composite fault's later component can land a few seconds after dispatch
-(N11), while the incident is still open, so the dispatch-time request diff
+while the incident is still open, so the dispatch-time request diff
 alone can miss it even though the responder correctly cited it. Checking
 against the union of the request's diff and the controller's diff as of
 verification time closes that gap without weakening the check: a change that
@@ -106,7 +106,7 @@ class DetectorFlip(BaseModel):
 
 
 class RepairAttribution(BaseModel):
-    """Whether the responder's own recorded repair backs one root cause (F8)."""
+    """Whether the responder's own recorded repair backs one root cause."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -145,7 +145,7 @@ def verify_diagnosis(
     """Verify each confirmed root cause of ``result`` against controller facts.
 
     ``final_state_changes`` is the controller's diff against the healthy
-    baseline as of verification time (its closing view, N11), which can name
+    baseline as of verification time (its closing view), which can name
     a composite's later fault that landed after the request's dispatch-time
     snapshot was taken. State-change evidence is checked against the union of
     the request's diff and this one; a change absent from both is still
@@ -207,7 +207,7 @@ class _StateChangeEvidence:
 
     #: ``Kind/name`` in the dispatch-time diff: observed before any repair.
     dispatch: frozenset[str]
-    #: ``Kind/name`` in either diff (N11's union), for records without observation times.
+    #: ``Kind/name`` in either diff (the union rule), for records without observation times.
     changed: frozenset[str]
     #: ``Kind/name`` to first observation while the incident was open; None in older records.
     observed: dict[str, datetime] | None
@@ -316,7 +316,7 @@ def _verify(
     )
 
 
-# Repair attribution (F8).
+# Repair attribution.
 
 #: kubectl short names and plurals, mapped to the lower-case singular kind.
 _KIND_ALIASES = {
