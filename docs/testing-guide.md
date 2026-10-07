@@ -42,7 +42,7 @@ SDO_RUN_LIVE_AGENTS=1 SDO_LIVE_CODEX_MODEL=gpt-6-luna SDO_LIVE_CLAUDE_MODEL=haik
   uv run pytest -m live_agents tests/
 ``` Live Codex or Kubernetes tests may require explicit markers, credentials, images, a cluster, and longer timeouts; do not infer production readiness from skipped external tests.
 
-## Test the paper contracts
+## Test the lifecycle contracts
 
 ### Lifecycle separation
 

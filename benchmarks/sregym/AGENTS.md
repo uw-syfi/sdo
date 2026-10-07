@@ -20,7 +20,7 @@ The external SREGym implementation is a separately pinned Git submodule at `thir
 - **sdo_codex** — the adapter-backed benchmark entry for the production SDO design
 - **crucible** — `uv run python -m benchmarks.sregym.agents.crucible.driver`; a legacy benchmark agent retained for historical comparisons
 
-Crucible's orchestrator, judge, benchmark-oracle recovery, and private knowledge-base formats are benchmark agent logic. They must not be imported by production SDO code or treated as the implementation of the paper's responder and repository-backed operational memory.
+Crucible's orchestrator, judge, benchmark-oracle recovery, and private knowledge-base formats are benchmark agent logic. They must not be imported by production SDO code or treated as the implementation of SDO's responder and repository-backed operational memory.
 
 ## Boundary rules
 

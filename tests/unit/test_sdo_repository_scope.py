@@ -25,7 +25,7 @@ def _repository_files() -> list[Path]:
     return [
         REPOSITORY_ROOT / raw.decode()
         for raw in completed.stdout.split(b"\0")
-        if raw and not raw.startswith((b"third_party/sregym/", b"sdo_paper/"))
+        if raw and not raw.startswith((b"third_party/sregym/",))
     ]
 
 

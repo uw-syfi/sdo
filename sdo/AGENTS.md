@@ -1,6 +1,6 @@
 # SDO Python runtime
 
-This package implements the paper-facing lifecycle around the Go controller.
+This package implements the production lifecycle around the Go controller.
 
 ## Public workflow
 
@@ -37,6 +37,6 @@ The durable memory root is `.sdo/`. Treat `goal.md`, `arch.md`, `playbooks/`, `d
 - Run generated detector code only through isolated validation and the deterministic Go controller path.
 - Keep benchmark APIs, verdicts, submission relays, and receipts inside `../benchmarks/sregym/adapter/`.
 - Keep existing async event loops intact; make handlers async and await work directly.
-- Update `../docs/architecture.md` and the paper-scope matrix when lifecycle or ownership contracts change.
+- Update `../docs/architecture.md` (including its component map and artifact ownership matrix) when lifecycle or ownership contracts change.
 
 Validate Python edits with the root formatting/lint scripts and focused tests under `tests/unit/sdo/`.
