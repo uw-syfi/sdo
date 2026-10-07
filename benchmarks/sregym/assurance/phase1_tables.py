@@ -1,8 +1,8 @@
-"""Per-problem, per-arm tables for ``PHASE1_RESULTS.md`` (headline and latent-fault splits).
+"""Per-problem, per-arm phase-1 results tables (headline and latent-fault splits).
 
 Reads the same run directories as :mod:`benchmarks.sregym.assurance.phase1_analyze`
 and prints Markdown tables plus a JSON dump. Everything is judge-free
-(``Verdict.ttm_seconds``); token weights are PLAN.md's (cache_read 0.1,
+(``Verdict.ttm_seconds``); token weights are the assurance plan's (cache_read 0.1,
 output 8). Time cells use runs that passed end to end, because a failed run
 has no time to mitigation; success cells use every run.
 """

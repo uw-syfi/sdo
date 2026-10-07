@@ -160,7 +160,7 @@ def test_autoshrink_explain_names_every_step_and_the_final_estimate() -> None:
 
 
 def test_measured_constants_are_the_2026_09_28_evidence_not_plan_md_guesses() -> None:
-    # A regression guard: these are cited by RUNBOOK.md/HARNESS_DECISIONS.md;
+    # A regression guard: these are the documented calibration;
     # changing them silently would desync the documented calibration.
     assert pytest.approx(666_758.0) == SDO_STAGE_TOKENS
     assert pytest.approx(2_086_905.0) == SDO_LIFECYCLE_BOOTSTRAP_TOKENS

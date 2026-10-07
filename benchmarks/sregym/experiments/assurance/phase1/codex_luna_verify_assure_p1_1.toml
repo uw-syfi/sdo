@@ -1,9 +1,9 @@
-# Assurance phase 1, Codex (concise verify) arm, attempt plan 1 of 4 (PLAN.md
+# Assurance phase 1, Codex (concise verify) arm, attempt plan 1 of 4 (the assurance plan
 # section (d)); lane assure-w4.
 #
 # User decision (2026-09-28): the default Codex baseline arm verifies its own
 # work, concisely (benchmarks/sregym/runner/codex_baseline.py CONCISE_VERIFY_PROMPT).
-# Phase 1 has no stock (no-verify) arm; see PLAN.md's decisions log for the
+# Phase 1 has no stock (no-verify) arm; see the assurance plan's decisions log for the
 # rationale.
 #
 # Memoryless: each listed problem is an independent attempt (the runner keeps
@@ -19,7 +19,7 @@
 # port-forward through SREGym's agent proxy (app namespaces only), matching SDO's responder Role.
 # exec_disclosure stays off. The pre-parity configs are in git history at 0fbe1d4.
 #
-# DO NOT LAUNCH before the 2026-10-03 18:19 UTC quota reset and the PLAN.md
+# DO NOT LAUNCH before the 2026-10-03 18:19 UTC quota reset and the assurance plan
 # preconditions. Settings copied from ../../codex_luna_baseline.toml.
 
 [runner]

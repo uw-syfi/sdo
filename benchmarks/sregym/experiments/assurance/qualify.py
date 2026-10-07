@@ -1,4 +1,4 @@
-"""No-agent fast-loop qualification of the assurance problems (PLAN.md section (e), first row).
+"""No-agent fast-loop qualification of the assurance problems (the assurance plan section (e), first row).
 
 For each problem and trial: the app is healthy, inject, the mitigation oracle fails,
 recover, the app is healthy and the oracle passes. For a composite, after the

@@ -1,4 +1,4 @@
-# Assurance phase 1, SDO arm, rotation C (PLAN.md section (d)); lane assure-w2.
+# Assurance phase 1, SDO arm, rotation C (the assurance plan section (d)); lane assure-w2.
 #
 # One pipeline = one lane with ONE long-running SDO controller. Round 1 runs the
 # five phase-1 problems in rotation C (S3 K1 K2 S1 S2); round 2 repeats round 1 in the
@@ -8,7 +8,7 @@
 # workspace (no incident memory) from a FRESH lifecycle run on the de-tailored SDO
 # code (docs/fairness-DECISIONS.md). The earlier seed was built with
 # benchmark-tailored hints and must not be used. The seed below was produced by
-# the launch agent on 2026-09-28 (RUNBOOK.md, "Seed"): lifecycle commit dd6bc81
+# the launch agent on 2026-09-28: lifecycle commit dd6bc81
 # ("sdo: capture goal, architecture, and independent health judge") on
 # hotel_reservation, from an unseeded single-stage run of
 # missing_configmap_hotel_reservation on private images (:seed-fresh) and kind
@@ -19,7 +19,7 @@
 # default xhigh, never overridden. Enforced by
 # tests/unit/benchmarks/sregym/runner/test_assurance_configs.py.
 #
-# DO NOT LAUNCH before the 2026-10-03 18:19 UTC quota reset and the PLAN.md
+# DO NOT LAUNCH before the 2026-10-03 18:19 UTC quota reset and the assurance plan
 # preconditions. Env and agent settings are copied from
 # ../../sdo_codex_luna_network_policy_block.toml.
 

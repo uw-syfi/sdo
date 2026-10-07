@@ -1,4 +1,4 @@
-# Assurance metadata for the SREGym composite fault problems (PLAN.md section (c)).
+# Assurance metadata for the SREGym composite fault problems (the assurance plan section (c)).
 #
 # The mechanism and the component list live in the SREGym fork:
 #   third_party/sregym/sregym/conductor/problems/composite.py

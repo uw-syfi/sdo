@@ -1,7 +1,7 @@
-"""Analyze the phase-1 live assurance matrix (``experiments/assurance/PLAN.md`` (a)).
+"""Analyze the phase-1 live assurance matrix (the assurance plan (a)).
 
 Phase 1 has no stock (no-verify) Codex arm (user decision, 2026-09-28,
-PLAN.md decisions log): its sole Codex arm is the default, concise-verify
+the assurance plan decisions log): its sole Codex arm is the default, concise-verify
 baseline. Every claim below compares SDO against that one arm. Where the
 paper's own comparisons were against a stock baseline, the claim's summary
 notes that phase 1 has no stock arm to compare against.
@@ -11,7 +11,7 @@ One command, after the matrix finishes:
 1. classifies every run with :mod:`benchmarks.sregym.analysis.run_validity`;
 2. runs :mod:`benchmarks.sregym.analysis.incident_cost` per SDO pipeline
    against the Codex arm, over the valid runs only;
-3. computes each PLAN.md claim (C1-C11) against its pre-registered pass
+3. computes each assurance-plan claim (C1-C11) against its pre-registered pass
    criterion, with the CI method the plan names for it (a stratified
    bootstrap for ratios, Wilson for a proportion, Newcombe for a difference
    of proportions);
@@ -63,12 +63,12 @@ from benchmarks.sregym.analysis.stats import (
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping, Sequence
 
-#: PLAN.md (a) "Tokens ... cache_read = 0.1, output = 8, in base-input units".
+#: The assurance plan (a) "Tokens ... cache_read = 0.1, output = 8, in base-input units".
 PLAN_TOKEN_WEIGHTS = TokenWeights(uncached_input=1.0, cache_read_input=0.1, cache_write_input=1.0, output=8.0)
 
 ClaimVerdict = Literal["pass", "directional", "fail", "insufficient_data", "deferred"]
 
-#: PLAN.md (b) phase-1 problem set (K3 and V1 and S4 are phase 2 only, D10/D-table).
+#: The assurance plan (b) phase-1 problem set (K3 and V1 and S4 are phase 2 only, D10/D-table).
 PHASE1_PROBLEMS = (
     "missing_configmap_hotel_reservation",
     "wrong_service_selector_hotel_reservation",
@@ -81,7 +81,7 @@ COMPOSITE_PROBLEMS = (
     "composite_frontend_selector_and_readiness_hotel_reservation",
 )
 
-#: User decision (2026-09-28, PLAN.md decisions log): phase 1 has no stock
+#: User decision (2026-09-28, the assurance plan decisions log): phase 1 has no stock
 #: (no-verify) Codex arm. The paper's own C1-C4 and C8 comparisons were
 #: against a stock baseline; every claim here compares against the default,
 #: concise-verify arm instead, and says so.
@@ -115,7 +115,7 @@ class ClaimReport:
 
 
 def split_rounds(stages: Sequence[SdoStage]) -> tuple[list[SdoStage], list[SdoStage]]:
-    """PLAN.md (d): stage 0-4 are round 1 (cold), stage 5-9 repeat them (warm).
+    """The assurance plan (d): stage 0-4 are round 1 (cold), stage 5-9 repeat them (warm).
 
     An empty *stages* is a legitimate degenerate case (every stage of this
     pipeline was excluded by run_validity) and returns two empty lists; an
@@ -208,7 +208,7 @@ def success_counts(items: Iterable[SdoStage | CodexRun]) -> tuple[int, int]:
 
 
 def weighted_incident_tokens(stage: SdoStage) -> float:
-    """A warm incident's cost including any reflection it triggers (PLAN.md C2)."""
+    """A warm incident's cost including any reflection it triggers (the assurance plan C2)."""
 
     return stage.responder.weighted(PLAN_TOKEN_WEIGHTS) + stage.reflection.weighted(PLAN_TOKEN_WEIGHTS)
 
@@ -216,7 +216,7 @@ def weighted_incident_tokens(stage: SdoStage) -> float:
 def _verdict_from_threshold(
     point: float | None, ci_bound: float | None, *, point_ok: bool, ci_ok: bool | None
 ) -> ClaimVerdict:
-    """PLAN.md (a): pass needs point and CI bound both meeting the threshold; else directional; else fail."""
+    """The assurance plan (a): pass needs point and CI bound both meeting the threshold; else directional; else fail."""
 
     if point is None:
         return "insufficient_data"
@@ -578,7 +578,7 @@ def compute_c8(sdo_stages: Sequence[SdoStage], codex_runs: Sequence[CodexRun]) -
         f"n={sdo_total}); Codex (concise verify) rate = {codex_rate if codex_rate is not None else 'n/a'}. "
         f"{NO_STOCK_ARM_NOTE} "
         "False closures and the scripted partial-fix gate (3/3 unhealthy, then 3/3 cleared) are NOT computed here: "
-        "the gate is a no-LLM fastloop check (PLAN.md (e)), already exercised in QUALIFICATION.md/RC1.md before "
+        "the gate is a no-LLM fastloop check (plan (e)), already exercised by the no-LLM qualification before "
         "this live matrix; false closures need controller closure evidence outside SdoStage/Verdict."
     )
     return ClaimReport(
@@ -677,14 +677,14 @@ def compute_all_claims(
             "C6",
             "detectors retrieve cheaply and accurately",
             "recall >= 0.73, precision >= 0.48, FP <= 0.30, median latency <= 20s, retrieval tokens = 0",
-            "this is a no-LLM fastloop replay (PLAN.md (e)), a separate instrument from the live matrix this "
+            "this is a no-LLM fastloop replay (plan (e)), a separate instrument from the live matrix this "
             "tool analyzes; run the frozen-memory replay and feed its output to a dedicated C6 scorer.",
         ),
         _deferred(
             "C7",
             "memory transfers to recurrences with different parameter bindings",
             "ratio >= 1.5 vs Codex; family detector fires in >= 3 of 4 pipelines",
-            "the primary check (variant V1) is phase-2 only (PLAN.md (b)); phase 1 only has K1's partial "
+            "the primary check (variant V1) is phase-2 only (the assurance plan (b)); phase 1 only has K1's partial "
             "rate-ConfigMap variant, which this tool does not isolate from the rest of K1's composite verdict.",
         ),
         compute_c8(sdo_stages_flat, codex_runs),
@@ -692,15 +692,15 @@ def compute_all_claims(
             "C9",
             "token cost scales with incidents, not operating time",
             "0 tokens, 0 dispatches in each of 3 lanes over a 60-minute healthy soak",
-            "this is a no-LLM fastloop soak (PLAN.md (e)), a separate instrument from the live matrix this "
+            "this is a no-LLM fastloop soak (the assurance plan (e)), a separate instrument from the live matrix this "
             "tool analyzes; run the soak and feed its dispatch/token log to a dedicated C9 scorer.",
         ),
         _deferred(
             "C10",
             "deployment from source is reliable with the independent health judge",
             "3/3 fresh hotel-reservation lifecycles succeed",
-            "phase-1's SDO lanes seed from an existing lifecycle workspace (PLAN.md (d) stage 0) and spend no "
-            "lifecycle quota; C10 is phase-2 only (PLAN.md (b)).",
+            "phase-1's SDO lanes seed from an existing lifecycle workspace (plan (d) stage 0) and spend no "
+            "lifecycle quota; C10 is phase-2 only (the assurance plan (b)).",
         ),
         compute_c11_verify_ratio(sdo_pipelines, codex_runs),
     ]

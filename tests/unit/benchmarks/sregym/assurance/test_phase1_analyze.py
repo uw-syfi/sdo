@@ -266,7 +266,7 @@ def test_deferred_claims_are_marked_deferred_not_silently_dropped() -> None:
 
 
 def _write_sdo_pipeline_dir(root: Path, rotation: list[str]) -> Path:
-    """A synthetic phase-1-shaped SDO pipeline directory, modeled on the network_policy_block stages in RC1.md."""
+    """A synthetic phase-1-shaped SDO pipeline directory, modeled on RC1's network_policy_block stages."""
 
     for index, problem in enumerate(rotation * 2):
         stage = root / f"stage_{index}_{problem}"

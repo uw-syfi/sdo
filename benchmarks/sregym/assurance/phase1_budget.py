@@ -1,7 +1,7 @@
 """Quota budget estimates for the phase-1 matrix, calibrated from measured tokens.
 
-2026-10 correction (see ``RUNBOOK.md`` and ``HARNESS_DECISIONS.md``): this
-module originally converted PLAN.md (d)'s per-unit costs, which are stated in
+2026-10 correction: this
+module originally converted the assurance plan (d)'s per-unit costs, which are stated in
 *weekly-percent* directly (SDO stage 0.13%, Codex attempt 0.07%, "good to
 about x2"). That scale is wrong by several times over. The evidence:
 
@@ -12,7 +12,7 @@ about x2"). That scale is wrong by several times over. The evidence:
   the one cold lifecycle bootstrap, ``sdo_tokens_with_learning`` of 521,453 /
   789,458 / 705,392 for three warm single-stage repeats, and a Codex-stock
   mean of 529,706.67 tokens/attempt x3 runs = 1,589,120; the Codex+verify
-  arm's own tokens were not separately captured, only PLAN.md's 1.3x
+  arm's own tokens were not separately captured, only the assurance plan's 1.3x
   relative multiplier).
 - Across every ``QUOTA-READ`` in that window's ``queue.events`` log, the
   primary window's ``used_percent`` read exactly ``90.0`` at every single
@@ -31,7 +31,7 @@ correction's own citation; under 1 point per ~8.4M measured raw tokens summed
 across every run in the cited session scratchpad), so it will not
 under-budget relative to what was actually observed.
 
-The relative *shape* of PLAN.md (d)'s per-unit costs (composite stages/
+The relative *shape* of the assurance plan (d)'s per-unit costs (composite stages/
 attempts at 1.5x, verify at 1.3x, "worst case" at 2x) is not disputed by this
 correction and is kept unchanged; only the absolute weekly-% conversion was
 wrong.
@@ -45,7 +45,7 @@ is kept as the estimate for a concise-verify attempt: no concise-specific
 token measurement exists yet, and this is the conservative (higher) of the
 two verify variants measured so far.
 
-2026-10 gate change (user decision, logged in ``HARNESS_DECISIONS.md``): the
+2026-10 gate change (user decision): the
 start gate now checks *expected* (nominal) cost against the stop line, not
 the 2x worst case -- the 2x figure was designed for a per-unit rate an order
 of magnitude more expensive than what was actually observed, and kept
@@ -76,7 +76,7 @@ SDO_LIFECYCLE_BOOTSTRAP_TOKENS = 2_086_905.0
 #: concise-verify attempt's estimate is built from (see module docstring).
 CODEX_ATTEMPT_TOKENS = 529_706.6666666666
 
-#: PLAN.md (d)'s relative multipliers, unchanged by this correction.
+#: The assurance plan (d)'s relative multipliers, unchanged by this correction.
 SDO_COMPOSITE_STAGE_MULTIPLIER = 1.5
 CODEX_COMPOSITE_ATTEMPT_MULTIPLIER = 1.5
 VERIFY_MULTIPLIER = 1.3
@@ -85,7 +85,7 @@ WORST_CASE_MULTIPLIER = 2.0
 #: The fallback rate this correction adopts (see module docstring).
 POINTS_PER_TOKEN = 1e-7
 
-#: PLAN.md (b): the five phase-1 problems.
+#: The assurance plan (b): the five phase-1 problems.
 PHASE1_PROBLEMS = (
     "missing_configmap_hotel_reservation",  # S1
     "wrong_service_selector_hotel_reservation",  # S2
@@ -94,10 +94,10 @@ PHASE1_PROBLEMS = (
     "composite_frontend_selector_and_readiness_hotel_reservation",  # K2
 )
 COMPOSITE_PROBLEMS = (PHASE1_PROBLEMS[3], PHASE1_PROBLEMS[4])
-#: The smoke run's one problem: S1, PLAN.md (b)'s anchor ("Anchors Step 3").
+#: The smoke run's one problem: S1, the assurance plan (b)'s anchor ("Anchors Step 3").
 SMOKE_PROBLEM = PHASE1_PROBLEMS[0]
 
-#: PLAN.md (d)'s full phase-1 matrix, as amended by the 2026-09-28 no-stock-arm
+#: The assurance plan (d)'s full phase-1 matrix, as amended by the 2026-09-28 no-stock-arm
 #: decision: 4 SDO pipelines (rotations A-D), 5 concise-verify Codex attempts
 #: per problem, 0 stock.
 FULL_MATRIX: dict[str, int] = {"sdo_pipelines": 4, "codex_attempts": 5}
@@ -181,7 +181,7 @@ class TokenBudgetEstimate:
     def fits(self, *, current_used_percent: float, stop_percent: float) -> bool:
         """Start gate: current + this plan's EXPECTED (nominal) cost must clear the stop line.
 
-        2026-10 gate change (``HARNESS_DECISIONS.md``): gating on the 2x
+        2026-10 gate change: gating on the 2x
         worst case auto-shrunk the full matrix to a single SDO pipeline for
         no measured reason. The live global stop and the per-lane 1.5x abort
         are the run's actual safety nets; the worst case is still computed

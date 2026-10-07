@@ -1,4 +1,4 @@
-"""Confidence-interval methods pre-registered in ``experiments/assurance/PLAN.md`` (a).
+"""Confidence-interval methods pre-registered in the assurance plan (a).
 
 - **Proportions:** Wilson score 95% CI (:func:`wilson_interval`).
 - **Differences of proportions:** Newcombe hybrid-score 95% CI, method 10
@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
-#: PLAN.md (a): "10,000 replicates, seed 20261003, percentile 95% CI".
+#: The assurance plan (a): "10,000 replicates, seed 20261003, percentile 95% CI".
 DEFAULT_BOOTSTRAP_REPLICATES = 10_000
 DEFAULT_BOOTSTRAP_SEED = 20261003
 Z_95 = 1.959963984540054

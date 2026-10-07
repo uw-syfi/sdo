@@ -1,6 +1,6 @@
 # Pull-before-act live validation, arm ON (late_findings = "pull").
 # Seed: private copy of a lifecycle workspace plus the learned Event-reading frontend-readiness-probe-mismatch detector
-# (docs/pull-validation-decisions.md). Images: private `lf2` build. Three repeats of A1, handoff reflection kept (baseline guidance).
+#. Images: private `lf2` build. Three repeats of A1, handoff reflection kept (baseline guidance).
 # Launch: SREGYM_KIND_CLUSTER_PREFIX=lf-w SREGYM_WORKER_ID_OFFSET=<32|33> SREGYM_APP_WORKSPACE_SEED_DIR=<seed> run_sregym.sh <this file>
 
 

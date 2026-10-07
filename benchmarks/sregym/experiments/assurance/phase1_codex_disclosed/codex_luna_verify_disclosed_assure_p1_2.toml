@@ -1,11 +1,11 @@
 # Phase-1 Codex rerun WITH the exec disclosure; otherwise identical to ../phase1/codex_luna_verify_assure_p1_2.toml
 # (the as-run, no-disclosure condition, labelled confounded_exec_proxy).
-# Assurance phase 1, Codex (concise verify) arm, attempt plan 2 of 4 (PLAN.md
+# Assurance phase 1, Codex (concise verify) arm, attempt plan 2 of 4 (the assurance plan
 # section (d)); lane assure-w5.
 #
 # User decision (2026-09-28): the default Codex baseline arm verifies its own
 # work, concisely (benchmarks/sregym/runner/codex_baseline.py CONCISE_VERIFY_PROMPT).
-# Phase 1 has no stock (no-verify) arm; see PLAN.md's decisions log for the
+# Phase 1 has no stock (no-verify) arm; see the assurance plan's decisions log for the
 # rationale.
 #
 # Memoryless: each listed problem is an independent attempt (the runner keeps
@@ -17,7 +17,7 @@
 # judge is codex-gpt-6-luna at the Codex CLI backend's default xhigh, never
 # overridden. Enforced by tests/unit/benchmarks/sregym/runner/test_assurance_configs.py.
 #
-# DO NOT LAUNCH before the 2026-10-03 18:19 UTC quota reset and the PLAN.md
+# DO NOT LAUNCH before the 2026-10-03 18:19 UTC quota reset and the assurance plan
 # preconditions. Settings copied from ../../codex_luna_baseline.toml.
 
 [runner]

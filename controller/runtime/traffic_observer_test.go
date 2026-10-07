@@ -182,8 +182,7 @@ func TestControllerOpensIncidentFromFailingSyntheticTraffic(t *testing.T) {
 	time.Sleep(600 * time.Millisecond)
 	observer.Poll(ctx)
 	// traffic-health additionally requires the finding to persist for
-	// traffic.DefaultHealthMinDuration (9s) before it fires (see N13 in
-	// benchmarks/sregym/experiments/assurance/NO_LLM_SUITE_DECISIONS.md), so
+	// traffic.DefaultHealthMinDuration (9s) before it fires, so
 	// step past that duration, not just past the firing evaluation count.
 	for step := 1; step <= 10; step++ {
 		if err := controller.StepEvents(ctx, now.Add(time.Duration(step)*time.Second), []sdk.WatchKind{traffic.Watch}); err != nil {

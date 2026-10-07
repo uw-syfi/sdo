@@ -1,7 +1,7 @@
 # Memoryless stock Codex baseline on the three hand-registered composite faults
 # (ComposedFailures, third_party/sregym) followed by their constituent single faults,
 # n=1 each. Settings copied from codex_luna_sequence_baseline.toml. Results and
-# interpretation: docs/hand-composites-decisions.md.
+
 
 [runner]
 agent = "codex"

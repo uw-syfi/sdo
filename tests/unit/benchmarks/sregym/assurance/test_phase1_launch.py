@@ -69,7 +69,7 @@ def test_bind_lanes_binds_every_config_to_its_declared_lane_and_arm(tmp_path: Pa
     assert bindings["assure-w0"].arm == "sdo_codex"
     assert bindings["assure-w4"].arm == "codex_verify"
     assert bindings["assure-w7"].arm == "codex_verify"
-    # Each arm's per-lane budget is its PLAN.md (d) row total, divided across its lanes.
+    # Each arm's per-lane budget is its assurance plan (d) row total, divided across its lanes.
     assert bindings["assure-w0"].budget_percent == pytest.approx(6.2 / 4)
     assert bindings["assure-w4"].budget_percent == pytest.approx(2.7 / 4)
 

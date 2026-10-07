@@ -4,7 +4,7 @@
 into the ``sregym-responder`` image. The responder runs ``codex exec`` with
 ``danger-full-access`` inside SREGym incidents, so that copy let it read the answer key:
 ``benchmarks/sregym/experiments/assurance/composites.toml`` (``correct_mitigation``,
-``expected_diff``, ``partial_fix_trap``), ``PLAN.md``/``QUALIFICATION.md``/``*_DECISIONS.md``,
+``expected_diff``, ``partial_fix_trap``), the assurance plan,
 the phase-1 TOMLs (problem order), ``benchmarks/sregym/fastloop/assurance/catalog.py`` (wrong
 fixes), and ``benchmarks/sregym/assurance/scripted_codex/faults.py`` (repair commands).
 

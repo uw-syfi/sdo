@@ -81,7 +81,7 @@ class StatusReading:
 
 @dataclass(frozen=True)
 class Bounds:
-    """Pass bounds, fixed before the runs (see NO_LLM_SUITE_DECISIONS.md)."""
+    """Pass bounds, fixed before the runs."""
 
     #: End of injection to the controller opening the incident.
     detect_seconds: float = 30.0

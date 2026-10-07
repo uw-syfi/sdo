@@ -94,7 +94,7 @@ def _codex_prompt_appendix(configs: Sequence[ExperimentConfig]) -> list[dict[str
     """Each ``agent = "codex"`` config's resolved verify-protocol mode and appendix hash.
 
     Recorded so a run manifest shows exactly what instruction text the agent
-    ran under (PLAN.md C11 needs to distinguish "concise" from "full" from
+    ran under (the assurance plan C11 needs to distinguish "concise" from "full" from
     "none"), without embedding the whole appendix text in every manifest.
     """
 

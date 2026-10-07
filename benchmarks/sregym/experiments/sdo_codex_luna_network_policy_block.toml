@@ -7,7 +7,7 @@
 #
 # Every run seeds stage 0 from one fixed post-lifecycle workspace (the lifecycle
 # commit that authored the traffic generators and workloads, no incident memory)
-# through SREGYM_APP_WORKSPACE_SEED_DIR; see luna_reuse_DECISIONS.md. Env and
+# through SREGYM_APP_WORKSPACE_SEED_DIR. Env and
 # agent settings are copied from sdo_codex_luna_persistent.toml.
 # Baselines: codex_luna_network_policy_block_baseline.toml and
 # codex_luna_verify_network_policy_block_baseline.toml.

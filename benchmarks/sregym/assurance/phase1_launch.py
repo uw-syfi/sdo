@@ -1,8 +1,8 @@
-"""Launch the phase-1 live assurance matrix (``experiments/assurance/PLAN.md`` (d), (e)).
+"""Launch the phase-1 live assurance matrix (the assurance plan (d), (e)).
 
 One command starts the eight phase-1 lanes (``assure-w0``..``assure-w7``),
 each bound to its config in ``experiments/assurance/phase1/`` by the lane the
-config's own header names (``PLAN.md`` D11). Before anything starts:
+config's own header names (the assurance plan D11). Before anything starts:
 
 - every lane's cluster is verified (never created here: SREGym's own harness
   bootstraps a lane's kind cluster lazily on first use, so "verify" only
@@ -11,13 +11,13 @@ config's own header names (``PLAN.md`` D11). Before anything starts:
   (:mod:`benchmarks.sregym.runner.preflight`); **any** failing lane aborts the
   whole matrix before anything is launched;
 - the Codex quota gate is read offline (:func:`benchmarks.sregym.runner.preflight.read_quota_snapshot`):
-  2026-10 correction (see ``RUNBOOK.md``/``HARNESS_DECISIONS.md``): the start
+  2026-10 correction: the start
   gate is budget-aware, not a fixed percent. ``phase1_budget.py`` estimates
-  the selected ``--matrix`` preset's (default: PLAN.md's full matrix, no
+  the selected ``--matrix`` preset's (default: the assurance plan's full matrix, no
   stock arm) EXPECTED (nominal) cost in tokens, calibrated from measured
   runs, converted to quota points at a conservative fallback rate; the
   matrix only starts if ``current used_percent + that expected cost <=
-  --stop-percent`` (default 96%, one point under PLAN.md (d)'s own 97% hard
+  --stop-percent`` (default 96%, one point under the assurance plan (d)'s own 97% hard
   stop), auto-shrinking the matrix's attempt/pipeline counts first if it
   does not fit. A small, non-shrinking smoke budget (1 SDO pipeline + 1
   Codex attempt, 1 problem) is reserved ahead of the matrix in this same
@@ -29,7 +29,7 @@ config's own header names (``PLAN.md`` D11). Before anything starts:
 
 Once running, lane starts are staggered, host load and disk are sampled every
 30 s, quota is logged per completed run, and a lane whose own attributed
-quota spend exceeds 1.5x its budgeted share of its arm's PLAN.md (d) row is
+quota spend exceeds 1.5x its budgeted share of its arm's assurance-plan (d) row is
 aborted on its own (the other lanes are not touched).
 
 Everything that could touch a real cluster or spend real quota is injected
@@ -81,7 +81,7 @@ LANE_HEADER = re.compile(r"lane (assure-w(\d))")
 LANE_COUNT = 8
 LANE_PREFIX = "assure-w"
 
-#: The eight PLAN.md (d) matrix lanes, grouped by arm (D11). Phase 1 has no
+#: The eight assurance-plan (d) matrix lanes, grouped by arm (D11). Phase 1 has no
 #: stock (no-verify) Codex arm (user decision, 2026-09-28): the sole Codex arm
 #: is the default, concise-verify baseline, on w4-w7.
 ARM_OF_PREFIX: tuple[tuple[str, str], ...] = (
@@ -89,7 +89,7 @@ ARM_OF_PREFIX: tuple[tuple[str, str], ...] = (
     ("codex_luna_verify_assure_p1_", "codex_verify"),
 )
 
-#: PLAN.md (d) "Phase 1 matrix" row totals (weekly-% of the shared Codex quota,
+#: The assurance plan (d) "Phase 1 matrix" row totals (weekly-% of the shared Codex quota,
 #: across every lane of that arm) and how many lanes share each row.
 ARM_BUDGET_PERCENT: dict[str, float] = {"sdo_codex": 6.2, "codex_verify": 2.7}
 ARM_LANE_COUNT: dict[str, int] = {"sdo_codex": 4, "codex_verify": 4}
@@ -134,7 +134,7 @@ class LaneBinding:
 
 
 def parse_lane_from_header(path: Path) -> str:
-    """The lane a phase-1 config's header comment names (``PLAN.md`` D11)."""
+    """The lane a phase-1 config's header comment names (the assurance plan D11)."""
 
     header = path.read_text(encoding="utf-8").split("\n\n", 1)[0]
     matches = LANE_HEADER.findall(header)
@@ -171,11 +171,11 @@ class QuotaGate:
     """Quota gates: start/stop thresholds and the per-lane abort rule.
 
     2026-10 correction: the start gate is no longer a fixed "used_percent <=
-    X" threshold (PLAN.md (d)'s original "Phase-1 start: only if <= 50%").
+    X" threshold (the assurance plan (d)'s original "Phase-1 start: only if <= 50%").
     Per the 2026-10 pivot, it is budget-aware instead: start only if
     ``current used_percent + the selected matrix's worst-case percent`` (see
     ``phase1_budget.py``) clears the stop line. ``stop_percent`` defaults to
-    PLAN.md (d)'s own hard stop (97%); the CLI's own default for a live run
+    the assurance plan (d)'s own hard stop (97%); the CLI's own default for a live run
     is 96%, one point of margin under the user's hard stop, per the pivot.
     """
 
@@ -191,7 +191,7 @@ class QuotaGate:
     def can_start_matrix(self, used_percent: float | None, planned_percent: float) -> bool:
         """Budget-aware start gate: current + planned cost must clear the stop line.
 
-        2026-10 gate change (``HARNESS_DECISIONS.md``): *planned_percent* is
+        2026-10 gate change: *planned_percent* is
         the plan's EXPECTED (nominal) cost, not its 2x worst case -- gating
         on the worst case auto-shrunk the full matrix to a single SDO
         pipeline for no measured reason. The live global stop
@@ -214,7 +214,7 @@ class QuotaGate:
         return used_percent is not None and used_percent >= self.stop_percent
 
     def lane_over_budget(self, cumulative_percent: float, budget_percent: float) -> bool:
-        """PLAN.md (d) "Per-lane abort: stop a lane whose running total exceeds 1.5x its row above."""
+        """The assurance plan (d) "Per-lane abort: stop a lane whose running total exceeds 1.5x its row above."""
 
         return cumulative_percent > budget_percent * self.lane_abort_multiplier
 
@@ -573,7 +573,7 @@ def run_matrix(
     smoke run) the caller is about to launch (see ``phase1_budget.py``);
     it defaults to the full phase-1 matrix. The start gate checks
     ``used_percent + planned_budget.nominal_percent`` (EXPECTED cost; 2026-10
-    gate change, ``HARNESS_DECISIONS.md``) against ``gate.stop_percent``, and
+    gate change) against ``gate.stop_percent``, and
     the decision (with every number that went into it, including the worst
     case, kept for information) is logged to
     ``<launch_dir>/gate_decision.json`` before anything is launched.
@@ -749,13 +749,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--matrix",
         choices=("full", "reduced"),
         default="full",
-        help="the phase-1 matrix preset to plan for (default: full, PLAN.md's own matrix)",
+        help="the phase-1 matrix preset to plan for (default: full, the assurance plan's own matrix)",
     )
     parser.add_argument(
         "--stop-percent",
         type=float,
         default=96.0,
-        help="global quota stop line for this run (PLAN.md (d)'s own hard stop is 97%%; "
+        help="global quota stop line for this run (the assurance plan (d)'s own hard stop is 97%%; "
         "this launcher's default keeps one point of margin under it)",
     )
     parser.add_argument("--lane-abort-multiplier", type=float, default=1.5)

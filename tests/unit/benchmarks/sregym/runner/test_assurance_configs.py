@@ -1,4 +1,4 @@
-"""Assurance phase-1 configs: the model rule, the lane topology and the run matrix (PLAN.md (d)).
+"""Assurance phase-1 configs: the model rule, the lane topology and the run matrix (the assurance plan (d)).
 
 Model rule (user, 2026-09-28): every SDO agent role and both Codex arms run ONLY
 Codex gpt-6-luna at medium effort, and the SREGym judge is ONLY codex-gpt-6-luna
@@ -148,7 +148,7 @@ def test_each_sdo_pipeline_keeps_going_past_a_failed_incident_and_censors_undete
         assert stage.agent_config["sdo_codex"]["detection_timeout_sec"] == 900
 
 
-#: The fresh, fairness-corrected lifecycle seed (RUNBOOK.md, "Seed"): lifecycle commit dd6bc81
+#: The fresh, fairness-corrected lifecycle seed: lifecycle commit dd6bc81
 #: ("sdo: capture goal, architecture, and independent health judge"), produced 2026-09-28 by an
 #: unseeded single-stage run of missing_configmap_hotel_reservation on private (:seed-fresh)
 #: images and kind cluster assure-seed0. Replaces the benchmark-tailored ``30e023d`` seed.

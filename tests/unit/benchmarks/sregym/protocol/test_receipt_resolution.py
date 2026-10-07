@@ -1,7 +1,6 @@
 """Strict receipt validity for incidents SDO did not mitigate.
 
-The fixtures are the five receipts the phase-1 live run rejected (assurance
-``PHASE1_RESULTS.md``), copied without their runtime-artifact paths. Three had
+The fixtures are the five receipts the phase-1 live run rejected, copied without their runtime-artifact paths. Three had
 ``recovery_attribution=external`` and no reflection (B2, B9, C8); two were
 cancelled no-ops whose health cleared before any repair (C5, D9).
 """

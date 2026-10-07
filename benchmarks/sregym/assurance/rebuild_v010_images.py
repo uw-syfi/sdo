@@ -1,7 +1,6 @@
 """Rebuild the shared ``sdo-*:v0.1.0`` images from a given commit — only when nothing is using them.
 
-RC1.md's "Decisions (autonomous)" section is explicit about why this needs its
-own gate: the shared tags were not rebuilt during RC1 integration because
+This needs its own gate: the shared tags were not rebuilt during RC1 integration because
 other agents' lanes were running from them, and a rebuild mid-run wedges any
 lane started before the fix landed in the image. This module:
 

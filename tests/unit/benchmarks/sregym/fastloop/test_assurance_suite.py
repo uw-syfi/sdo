@@ -240,9 +240,9 @@ def test_the_plans_composites_are_sregym_registry_problems() -> None:
         / "composite_specs.json"
     )
     specs = json_module.loads(specs_path.read_text(encoding="utf-8"))
-    planned = [case for case in COMPOSITES if case.source.startswith("PLAN.md")]
+    planned = [case for case in COMPOSITES if case.source.startswith("assurance plan")]
 
-    assert [case.source for case in planned] == ["PLAN.md K1", "PLAN.md K2", "PLAN.md K3"]
+    assert [case.source for case in planned] == ["assurance plan K1", "assurance plan K2", "assurance plan K3"]
     for case in planned:
         components = specs[case.registry_id]["components"]
         assert [item["problem"] for item in components if item["role"] == "fault"] == [

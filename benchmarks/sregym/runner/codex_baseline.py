@@ -5,7 +5,7 @@ submits a mitigation it must confirm the user-facing symptom is actually
 gone (not just pod status) and clean up any helper resources it created.
 ``[agent.codex] verify_protocol`` also accepts ``"full"``, a longer,
 step-by-step protocol used to isolate how much of SDO's advantage over a
-baseline comes from verification alone rather than from memory (PLAN.md
+baseline comes from verification alone rather than from memory (the assurance plan
 C11), and ``"none"``, the unmodified stock instruction. Every mode's text is
 fault-agnostic on purpose: it asks for good SRE practice and names no fault,
 resource or decoy.
@@ -46,7 +46,7 @@ VERIFICATION (REQUIRED): Before submitting a mitigation, confirm the user-facing
 an end-to-end check (not just pod status), and delete any helper pods or Jobs you created.
 """
 
-#: The longer, step-by-step protocol (PLAN.md C11: isolates the verify loop from memory).
+#: The longer, step-by-step protocol (the assurance plan C11: isolates the verify loop from memory).
 FULL_VERIFY_PROMPT = """\
 VERIFICATION PROTOCOL (REQUIRED):
 Follow these steps in order. They apply to both tasks.

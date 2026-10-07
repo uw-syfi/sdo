@@ -146,8 +146,8 @@ def _no_recorded_repair(facts: OutcomeFacts) -> bool:
     reachable only when health is already verified clear (checked by the
     caller), so a claim of completion with no action while health is still
     bad is never reclassified here; the broker rejects that before an outcome
-    exists (see ``BrokerService._validate_recorded_actions`` and
-    CHAOS_DECISIONS.md F16). The classification is
+    exists (see ``BrokerService._validate_recorded_actions``).
+    The classification is
     ``CLEARED_WITHOUT_ACTION`` so reports never count it as a mitigation (D30).
     """
 

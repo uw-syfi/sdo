@@ -167,7 +167,7 @@ SINGLE_FAULTS: tuple[FaultCase, ...] = (
 )
 
 #: Obvious pairs first: two services, and a NetworkPolicy block plus a selector fault. Then the
-#: assurance plan's K1-K3 (``benchmarks/sregym/experiments/assurance/PLAN.md`` (c)), as SREGym
+#: assurance plan's K1-K3 (section (c)), as SREGym
 #: registry composites.
 COMPOSITES: tuple[CompositeCase, ...] = (
     CompositeCase(name="policy-block+selector", faults=(NETWORK_POLICY_BLOCK, WRONG_SELECTOR)),
@@ -176,21 +176,21 @@ COMPOSITES: tuple[CompositeCase, ...] = (
     CompositeCase(
         name="K1",
         faults=(NETWORK_POLICY_BLOCK, MISSING_CONFIGMAP_RATE),
-        source="PLAN.md K1",
+        source="assurance plan K1",
         registry_id="composite_policy_and_rate_configmap_hotel_reservation",
         wrong_fixes=(WrongFix("decoy-regrant"),),
     ),
     CompositeCase(
         name="K2",
         faults=(WRONG_SELECTOR, READINESS_PROBE),
-        source="PLAN.md K2",
+        source="assurance plan K2",
         registry_id="composite_frontend_selector_and_readiness_hotel_reservation",
         wrong_fixes=(WrongFix("restart", "frontend"),),
     ),
     CompositeCase(
         name="K3",
         faults=(MISSING_CONFIGMAP,),
-        source="PLAN.md K3",
+        source="assurance plan K3",
         registry_id="composite_geo_configmap_with_log_drift_hotel_reservation",
         decoy_objects=("Deployment/geo",),
         wrong_fixes=(WrongFix("revert-drift", "geo", env="LOG_LEVEL"), WrongFix("decoy-regrant")),

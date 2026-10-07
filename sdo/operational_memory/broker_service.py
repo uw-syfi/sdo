@@ -559,7 +559,7 @@ class BrokerService:
         data-plane stall) truthfully reports ``completed`` with no action,
         because nothing needed repair. Rejecting that here on every retry
         would fail the closure permanently and block every later incident
-        (CHAOS_DECISIONS.md F16), so it is left to commit; ``derive_outcome``
+        so it is left to commit; ``derive_outcome``
         classifies it CLEARED_WITHOUT_ACTION rather than crediting it as a mitigation, and
         it is never reflected on. A ``completed`` claim with no action while
         health is still not verified cannot be trusted and is rejected

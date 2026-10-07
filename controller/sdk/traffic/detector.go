@@ -30,8 +30,7 @@ const RuleIDPrefix = "scenario-slo."
 // timeouts that would otherwise dispatch a responder for nothing. Real
 // faults in this suite are detected in 3-5s. Nine seconds clears the
 // observed stalls with headroom while adding at most one more poll beyond
-// real-fault detection. See N13 in
-// benchmarks/sregym/experiments/assurance/NO_LLM_SUITE_DECISIONS.md.
+// real-fault detection.
 const DefaultHealthMinDuration = 9 * time.Second
 
 type sloDetector struct {

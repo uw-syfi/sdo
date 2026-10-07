@@ -47,7 +47,6 @@ Report timing without judge time, the same way for every arm (`benchmarks.sregym
 - Every launch runs the preflight in `runner/preflight.py`. It aborts on low disk, floating or mismatched Codex CLI and agentshim pins, broken images, lane-isolation problems, any role or judge off `codex:gpt-6-luna` / `codex-gpt-6-luna` at `xhigh`, arm-parity differences, or an exhausted Codex quota. Check the arms of a comparison before launching them: `uv run python -m benchmarks.sregym.runner.preflight <arm.toml>...`.
 - Every run directory gets a `run_manifest.json` (`runner/manifest.py`).
 - Report only runs that `uv run python -m benchmarks.sregym.analysis.run_validity` classifies as `valid` or `agent_failure`. `incident_cost` excludes `invalid_infra` runs itself and prints why. Do not rename run directories by hand to mark them invalid.
-- Decisions: `experiments/assurance/HARNESS_DECISIONS.md`.
 
 ## Token metrics
 
