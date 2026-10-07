@@ -38,7 +38,6 @@ RUN npm install --global "@openai/codex@${CODEX_VERSION}" "@anthropic-ai/claude-
 RUN python3 -m pip install --break-system-packages --no-cache-dir --no-deps \
       agentshim==0.7.0 \
       annotated-types==0.7.0 \
-      loguru==0.7.3 \
       protobuf==6.33.4 \
       pydantic==2.12.5 \
       pydantic-core==2.41.5 \

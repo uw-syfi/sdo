@@ -18,18 +18,6 @@ path = "libs.sdo_core"
 depends_on = []
 
 [[modules]]
-path = "libs.pydantic_agent"
-depends_on = [
-    "libs.model_config",
-]
-
-[[modules]]
-path = "libs.agent_mw"
-depends_on = [
-    "libs.pydantic_agent",
-]
-
-[[modules]]
 path = "libs.agent_cli"
 depends_on = [
     "libs.sdo_core",
@@ -135,14 +123,4 @@ depends_on = [
     "sdo.agent_runtime.responder",
     "sdo.operation",
     "sdo.operational_memory",
-]
-
-# --- Benchmark agents (independent of production sdo) ---
-
-[[modules]]
-path = "benchmarks.sregym.agents"
-depends_on = [
-    "libs.pydantic_agent",
-    "libs.agent_mw",
-    "libs.agent_cli",
 ]
