@@ -19,7 +19,7 @@
           {
             "name": "check-errors-after-edit",
             "type": "command",
-            "command": "$GEMINI_PROJECT_DIR/scripts/check-errors.sh",
+            "command": "$GEMINI_PROJECT_DIR/scripts/check_errors.sh",
             "description": "Run check_errors.sh --fix after edits"
           },
           {

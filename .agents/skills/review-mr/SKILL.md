@@ -1,9 +1,9 @@
 ---
 name: review-mr
-description: "Review a merge request (MR) or pull request (PR) by analyzing the diff against the main branch. Use when the user asks to review an MR, review a PR, review a branch, review changes, do a code review, or invokes /review-mr. Triggers on requests like 'review this MR', 'review my PR', 'code review branch feature-x', 'review the changes on this branch'. The user is expected to already be on the branch or provide a branch name."
+description: "Review a pull request (PR) by analyzing the diff against the main branch. Use when the user asks to review a PR, review a branch, review changes, do a code review, or invokes /review-mr. Triggers on requests like 'review this PR', 'review my PR', 'code review branch feature-x', 'review the changes on this branch'. The user is expected to already be on the branch or provide a branch name."
 ---
 
-# Review MR
+# Review PR
 
 ## Workflow
 
@@ -23,9 +23,9 @@ Also run `git log main...{branch} --oneline` to understand commit history and in
 
 ### 3. Understand intent before reviewing
 
-Before writing findings, assess whether the MR's purpose is clear from commit messages, branch name, and code changes. If ambiguous, ask the user clarifying questions such as:
+Before writing findings, assess whether the PR's purpose is clear from commit messages, branch name, and code changes. If ambiguous, ask the user clarifying questions such as:
 
-- "What problem does this MR solve?"
+- "What problem does this PR solve?"
 - "Is [specific change] intentional or an artifact?"
 - "This changes [X behavior]—is that the goal?"
 
@@ -60,7 +60,7 @@ Analyze changes against the checklist below. Organize findings by severity:
 
 ### 5. Review checklist
 
-Apply these checks to every MR:
+Apply these checks to every PR:
 
 - **Correctness**: Does the code do what it claims? Edge cases handled?
 - **Security**: Any user input unsanitized? Secrets exposed? Auth checks missing?
@@ -71,7 +71,7 @@ Apply these checks to every MR:
 - **API design**: Are interfaces clear, minimal, and consistent? Breaking changes documented?
 - **Resource management**: Files/connections closed? Cleanup in finally/defer/context managers?
 - **Naming & clarity**: Can you understand the code without the diff context?
-- **Scope**: Does the MR do one thing well, or is it mixing concerns?
+- **Scope**: Does the PR do one thing well, or is it mixing concerns?
 - **Rollback safety**: Can this be reverted without data migration issues?
 - **Dependencies**: New dependencies justified? Version pinned? License compatible?
 
@@ -80,9 +80,9 @@ Apply these checks to every MR:
 Format the review as:
 
 ```
-## MR Review: `{branch_name}`
+## PR Review: `{branch_name}`
 
-**Summary**: 1-2 sentence summary of what this MR does and overall assessment.
+**Summary**: 1-2 sentence summary of what this PR does and overall assessment.
 
 **Scope**: {N} files changed, {additions}+/{deletions}-
 
@@ -108,7 +108,7 @@ Omit empty sections. Always include the "What looks good" section—acknowledge 
 
 - Be specific: reference file paths and line numbers. Never give vague feedback.
 - Be constructive: suggest fixes, not just problems.
-- Respect scope: review what changed, not the entire codebase. Only flag pre-existing issues if the MR makes them materially worse.
+- Respect scope: review what changed, not the entire codebase. Only flag pre-existing issues if the PR makes them materially worse.
 - Read surrounding context: understand the file and module before commenting on the diff.
 - Use the project's CLAUDE.md and conventions to calibrate style expectations.
 - When unsure about project-specific conventions, check existing code for patterns before flagging style issues.

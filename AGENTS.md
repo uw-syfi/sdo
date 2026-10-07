@@ -47,4 +47,4 @@ Use `uv` and `uv run ...` for Python. See [docs/testing-guide.md](docs/testing-g
 
 ## Remote repository access
 
-Use `glab` when available for GitLab issues and merge requests.
+Use `gh` when available for GitHub issues and pull requests.

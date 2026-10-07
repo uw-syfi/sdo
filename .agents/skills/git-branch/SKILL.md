@@ -10,10 +10,10 @@ Create branches following the format: `<name>/<type>/<brief-desc>`
 ## Examples from This Repository
 
 Past branches in this repository:
-- `vic/feat/code-analyzer` - New feature for code analysis
-- `vic/fix/log-capture` - Bug fix for log capturing
-- `vic/refactor/jinja-prompt` - Refactoring prompt system
-- `vic/chore/update-bash-file` - Maintenance task
+- `jdoe/feat/code-analyzer` - New feature for code analysis
+- `jdoe/fix/log-capture` - Bug fix for log capturing
+- `jdoe/refactor/jinja-prompt` - Refactoring prompt system
+- `jdoe/chore/update-bash-file` - Maintenance task
 
 ## Workflow
 
@@ -30,7 +30,7 @@ Ask the user for a brief description of what the branch is for. This should be a
 Extract the developer name from `git config user.name`:
 - Take the first part before any hyphen or space
 - Convert to lowercase
-- Example: `vic-lsh` → `vic`, `John Doe` → `john`
+- Example: `jdoe-dev` → `jdoe`, `John Doe` → `john`
 
 **If uncertain about the mapping** (e.g., unclear git username, multiple possible interpretations), ask the user:
 - "I see your git username is '{username}'. Should I use '{inferred}' for the branch name, or would you prefer something else?"
@@ -67,13 +67,9 @@ Convert the description to the required format:
 
 ### 5. Create and Checkout Branch
 
-Use the `scripts/create_branch.sh` script or git commands directly:
+Create the branch with git:
 
 ```bash
-# Using the script
-scripts/create_branch.sh <type> <brief-desc> [name]
-
-# Or directly with git
 git checkout -b <name>/<type>/<brief-desc>
 ```
 
@@ -87,14 +83,14 @@ git checkout -b <name>/<type>/<brief-desc>
 
 **Claude:**
 1. Infers: `feat` type (new functionality)
-2. Gets git user: `vic-lsh` → `vic`
+2. Gets git user: `jdoe-dev` → `jdoe`
 3. Formats description: `health-check-endpoint`
-4. Creates branch: `vic/feat/health-check-endpoint`
+4. Creates branch: `jdoe/feat/health-check-endpoint`
 5. Automatically checks out to the new branch
 
 **Output:**
 ```bash
-git checkout -b vic/feat/health-check-endpoint
+git checkout -b jdoe/feat/health-check-endpoint
 ```
 
 ## Edge Cases

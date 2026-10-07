@@ -1,6 +1,6 @@
 ---
 name: review-codebase
-description: Review the SDO codebase for correctness, security, architecture alignment, production-versus-SREGym boundaries, code quality, and convention adherence. Use for repository or subsystem audits and /review-codebase; use review-mr for a specific branch or merge-request diff.
+description: Review the SDO codebase for correctness, security, architecture alignment, production-versus-SREGym boundaries, code quality, and convention adherence. Use for repository or subsystem audits and /review-codebase; use review-mr for a specific branch or pull-request diff.
 ---
 
 # Review the SDO codebase
@@ -54,6 +54,6 @@ Treat `apps/` as evaluation input unless the user requests an application review
 
 Keep each issue self-contained, logically narrow, actionable, and verifiable. Critical means a security, data-loss, or fundamental correctness risk; high means substantial reliability or architecture failure; medium means moderate risk or maintainability debt; low means a contained improvement.
 
-## GitLab issues
+## GitHub issues
 
-File nothing until explicitly authorized. When authorized, use `glab issue create` with the proposed title, labels, and a body containing Problem, Proposed Fix, and Acceptance Criteria. Preserve issue numbering so the user can select findings unambiguously.
+File nothing until explicitly authorized. When authorized, use `gh issue create` with the proposed title, labels, and a body containing Problem, Proposed Fix, and Acceptance Criteria. Preserve issue numbering so the user can select findings unambiguously.
