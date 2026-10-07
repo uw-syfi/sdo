@@ -86,7 +86,8 @@ COMPOSITE_PROBLEMS = (
 #: against a stock baseline; every claim here compares against the default,
 #: concise-verify arm instead, and says so.
 NO_STOCK_ARM_NOTE = (
-    "Phase 1 has no stock (no-verify) Codex arm to compare against for comparability with the original evaluation: the default "
+    "Phase 1 has no stock (no-verify) Codex arm to compare against, so results are not directly "
+    "comparable with the original evaluation: the default "
     "baseline verifies its own work, so this comparison already shows whether SDO's win reflects memory and "
     "learned detectors rather than a missing verification instruction."
 )
