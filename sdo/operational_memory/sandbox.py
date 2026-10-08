@@ -801,12 +801,20 @@ class LocalSandboxRunner:
             environment = {
                 "PATH": os.environ.get("PATH", ""),
                 "HOME": str(cache_root),
-                "GOCACHE": str(cache_root / "go-build"),
+                # Honor an externally provided GOCACHE/GOMODCACHE (a warm, shared
+                # cache) the same way; only fall back to the throwaway per-run
+                # directory when the caller has not pointed us at one. A cold
+                # GOCACHE recompiles the Go stdlib, protovalidate, and the SDK on
+                # every validation (~minutes); a warm one makes it incremental.
+                "GOCACHE": os.environ.get("GOCACHE", str(cache_root / "go-build")),
                 "GOMODCACHE": os.environ.get("GOMODCACHE", str(cache_root / "go-mod")),
                 "PYTHONPATH": os.environ.get("PYTHONPATH", ""),
                 "PYTHONDONTWRITEBYTECODE": "1",
             }
-            for name in ("GOPROXY", "GOSUMDB", "GOMAXPROCS", "GOFLAGS"):
+            # SDO_GO_CACHE_SEED lets go_runner.seed_go_cache_from_environment copy a
+            # trusted warm cache into GOCACHE; forward it for parity with the
+            # container and Kubernetes runners instead of silently dropping it.
+            for name in ("GOPROXY", "GOSUMDB", "GOMAXPROCS", "GOFLAGS", "SDO_GO_CACHE_SEED"):
                 if value := os.environ.get(name):
                     environment[name] = value
             try:

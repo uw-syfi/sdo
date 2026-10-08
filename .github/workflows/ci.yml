@@ -41,6 +41,21 @@ jobs:
           python-version: "3.12"
           enable-cache: true
       - run: uv sync --locked --all-extras
+      # The detector-sandbox unit tests really compile Go in an isolated
+      # workspace. tests/conftest.py points them at the runner's default Go
+      # caches; persisting those across runs turns the first sandbox build warm
+      # (keyed on the controller module graph) instead of a cold stdlib+SDK
+      # rebuild every run. Only the leg that runs pytest needs it.
+      - name: Cache the detector-sandbox Go build and module caches
+        if: matrix.name == 'unit tests'
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-sandbox-${{ runner.os }}-${{ hashFiles('controller/**/go.sum') }}
+          restore-keys: |
+            go-sandbox-${{ runner.os }}-
       - run: ${{ matrix.run }}
 
   controller:
@@ -66,7 +81,10 @@ jobs:
         with:
           go-version: "${{ matrix.go-version }}"
           cache-dependency-path: controller/${{ matrix.module }}/go.sum
-      - run: go test -race ./...
+      # TestReplay* and TestChaos* have dedicated, 5-minute-capped jobs below;
+      # skip them here so the runtime module's tests aren't compiled and run a
+      # second time in this job.
+      - run: go test -race -skip '^TestReplay|^TestChaos' ./...
         working-directory: controller/${{ matrix.module }}
 
   # Proto contracts are the single source of truth for the cross-seam types. This job lints the .proto source, checks
