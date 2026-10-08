@@ -12,8 +12,48 @@ concurrency:
 # Every action is pinned to a commit (the tag it was taken from is in the
 # comment), and uv installs exactly uv.lock.
 jobs:
+  # Decide which parts of the tree a change can affect so documentation-only and
+  # Python-only pull requests can skip the heavy Go and image jobs. This job
+  # always runs, and the aggregating "Required PR CI" job below is the single
+  # required status check, so a skipped job never blocks a merge. The filters are
+  # deliberately conservative: the unit tests compile Go and parse Go-authored
+  # contract fixtures, so they run whenever controller/proto change too.
+  changes:
+    name: affected jobs
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.filter.outputs.python }}
+      go: ${{ steps.filter.outputs.go }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        id: filter
+        with:
+          filters: |
+            python:
+              - '**/*.py'
+              - '**/*.toml'
+              - 'uv.lock'
+              - 'pyrightconfig.json'
+              - '.pre-commit-config.yaml'
+              - 'sdo/**'
+              - 'libs/**'
+              - 'benchmarks/**'
+              - 'apps/**'
+              - 'tests/**'
+              - 'scripts/**'
+              - '.github/workflows/ci.yml'
+            go:
+              - 'controller/**'
+              - 'proto/**'
+              - 'buf*.yaml'
+              - 'buf.lock'
+              - '.github/workflows/ci.yml'
+
   python:
     name: ${{ matrix.name }}
+    needs: changes
+    if: needs.changes.outputs.python == 'true' || needs.changes.outputs.go == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -60,6 +100,8 @@ jobs:
 
   controller:
     name: controller (${{ matrix.module }})
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -92,6 +134,8 @@ jobs:
   # codegen matches `buf generate` — so schema drift is a build failure here.
   proto:
     name: proto contracts
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -123,6 +167,8 @@ jobs:
   # itself in the failing subtest.
   replay:
     name: replay (recorded incidents)
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -141,6 +187,8 @@ jobs:
   # is named in the subtest and replays with SDO_CHAOS_SEED=<n>.
   chaos:
     name: chaos (timing/ordering)
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -157,6 +205,8 @@ jobs:
   # and agentshim versions, so a broken image fails here and not mid-experiment.
   images:
     name: controller images
+    needs: changes
+    if: needs.changes.outputs.python == 'true' || needs.changes.outputs.go == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -195,3 +245,37 @@ jobs:
             echo "${leaked}" >&2
             exit 1
           fi
+
+  # One stable, always-present result for branch protection: the single required
+  # status check on main. It needs every other job and runs even when some were
+  # skipped by the affected-jobs filter. A skipped job is acceptable (it did not
+  # apply to this change); any other non-success result fails the merge. Adding,
+  # renaming, or path-skipping a job above never requires touching branch
+  # protection, because only this context is pinned.
+  required-pr-ci:
+    name: Required PR CI
+    needs:
+      - changes
+      - python
+      - controller
+      - proto
+      - replay
+      - chaos
+      - images
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every applicable CI job to succeed
+        env:
+          JOB_RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+
+          results = {name: details["result"] for name, details in json.loads(os.environ["JOB_RESULTS"]).items()}
+          failed = {name: result for name, result in results.items() if result not in {"success", "skipped"}}
+          if failed:
+              raise SystemExit(f"Required CI jobs did not succeed: {failed}")
+          print("all applicable CI jobs succeeded or were skipped:", results)
+          PY
