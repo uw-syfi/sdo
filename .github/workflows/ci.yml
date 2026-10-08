@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   pull_request:
+  # GitHub merge queue: CI must report on the queue's temporary
+  # gh-readonly-queue/... branch or the queue waits until it times out. Every
+  # job runs in the queue (the `changes` job forces its outputs true there) so
+  # the real merge commit is validated against the latest main.
+  merge_group:
+    types: [checks_requested]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -22,11 +28,14 @@ jobs:
     name: affected jobs
     runs-on: ubuntu-latest
     outputs:
-      python: ${{ steps.filter.outputs.python }}
-      go: ${{ steps.filter.outputs.go }}
+      python: ${{ steps.resolve.outputs.python }}
+      go: ${{ steps.resolve.outputs.go }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        # paths-filter has no diff base in the merge queue; skip it there and
+        # let the resolve step force everything on.
+        if: github.event_name != 'merge_group'
         id: filter
         with:
           filters: |
@@ -49,6 +58,21 @@ jobs:
               - 'buf*.yaml'
               - 'buf.lock'
               - '.github/workflows/ci.yml'
+      - name: Resolve affected areas
+        id: resolve
+        env:
+          EVENT: ${{ github.event_name }}
+          PYTHON: ${{ steps.filter.outputs.python }}
+          GO: ${{ steps.filter.outputs.go }}
+        run: |
+          if [ "${EVENT}" = "merge_group" ]; then
+            # Validate the real merge commit against latest main: run everything.
+            echo "python=true" >> "${GITHUB_OUTPUT}"
+            echo "go=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "python=${PYTHON}" >> "${GITHUB_OUTPUT}"
+            echo "go=${GO}" >> "${GITHUB_OUTPUT}"
+          fi
 
   python:
     name: ${{ matrix.name }}
