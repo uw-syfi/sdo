@@ -96,3 +96,4 @@ exp_config/*/*.log
 # tach cache
 .tach/
 
+*.local.*
