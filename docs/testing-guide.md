@@ -33,6 +33,8 @@ uv run pytest tests/ --cov=sdo --cov=controller
 
 Use `scripts/run_tests.sh` for the repository-wide suite.
 
+`scripts/test_python.sh` runs pytest across cores with `pytest-xdist`; `pytest-cov` combines the per-worker coverage so the 70% `fail_under` gate still sees the whole suite. Set `SDO_PYTEST_WORKERS=0` for an in-process run when iterating on a single test. The real-compile detector-sandbox tests (`LocalSandboxRunner`) are the slowest: a session fixture (`tests/conftest.py`) points them at the host's shared `GOCACHE`/`GOMODCACHE` so each is an incremental Go build rather than a cold stdlib+SDK rebuild. Set `SDO_TEST_NO_SHARED_GO_CACHE=1` to opt out and reproduce a cold build.
+
 Go-to-Python contract shapes are pinned by fixtures the Go controller writes under `tests/fixtures/sdo/contracts/go/` (`controller/runtime/contract_golden_test.go`) and Python's strict models parse (`tests/unit/sdo/contracts/test_go_contract_fixtures.py`, plus the broker and SREGym receipt tests). After an intentional Go encoding change, regenerate them with `SDO_UPDATE_GO_CONTRACT_FIXTURES=1 go test -run TestGoContractFixtures ./...` in `controller/runtime` and rerun the Python tests. `TestContractShapesNeverEncodeNullCollections` fails on any `null` in those shapes: Python rejects `null` for a list field.
 
 Agent turns are tested with agentshim's `FakeExecutor` through `tests/structured_turns.py`, which replays each provider's real stream format. Tests marked `live_agents` run the real Codex and Claude Code CLIs and are opt-in; cheap models keep them inexpensive:

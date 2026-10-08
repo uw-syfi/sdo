@@ -281,6 +281,52 @@ def test_sandboxes_reject_a_healthy_baseline_outside_the_validated_tree(path: st
         ContainerSandboxRunner(healthy_baseline=path)
 
 
+def _capture_environment(captured: dict[str, object]) -> object:
+    def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        captured.update(kwargs)
+        return subprocess.CompletedProcess(command, 0, stdout="ok", stderr="")
+
+    return fake_run
+
+
+def test_local_sandbox_reuses_a_shared_go_build_cache_from_the_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # A warm, shared GOCACHE turns each detector-sandbox validation into an
+    # incremental Go build instead of a cold one. The dev-only local runner must
+    # honor an externally provided GOCACHE the same way it already honors
+    # GOMODCACHE, rather than forcing a throwaway per-run build cache that
+    # re-compiles the Go stdlib, protovalidate, and the SDK every time.
+    from sdo.operational_memory.sandbox import LocalSandboxRunner
+
+    shared = tmp_path / "shared-go-build"
+    monkeypatch.setenv("GOCACHE", str(shared))
+
+    captured: dict[str, object] = {}
+    LocalSandboxRunner(command_runner=_capture_environment(captured)).run(tmp_path)  # type: ignore[arg-type]
+
+    environment = captured["env"]
+    assert isinstance(environment, dict)
+    assert environment["GOCACHE"] == str(shared)
+
+
+def test_local_sandbox_forwards_the_go_cache_seed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Parity with the container and Kubernetes runners, which set
+    # SDO_GO_CACHE_SEED: the local runner must forward it so a seeded warm cache
+    # is copied in by controller.builder.go_runner.seed_go_cache_from_environment
+    # rather than being silently dropped (leaving a cold build).
+    from sdo.operational_memory.sandbox import LocalSandboxRunner
+
+    monkeypatch.setenv("SDO_GO_CACHE_SEED", "/opt/sdo/go-build-cache")
+
+    captured: dict[str, object] = {}
+    LocalSandboxRunner(command_runner=_capture_environment(captured)).run(tmp_path)  # type: ignore[arg-type]
+
+    environment = captured["env"]
+    assert isinstance(environment, dict)
+    assert environment["SDO_GO_CACHE_SEED"] == "/opt/sdo/go-build-cache"
+
+
 def test_container_validation_identity_distinguishes_the_healthy_baseline_gate() -> None:
     def runner_for(baseline: str | None) -> ContainerSandboxRunner:
         runner = ContainerSandboxRunner(healthy_baseline=baseline)
